@@ -15,10 +15,10 @@ class Header extends Component {
           <div class="nav-wrapper white">
             <a id="ssc-logo-link" href="/"><img id="ssc-logo-img" src={sscLogo}/></a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-              <li class="indigo darken-3"><Link to="/">Home</Link></li>
-              <li class="indigo darken-3"><Link to="/about">About Us</Link></li>
-              <li class="indigo darken-3"><Link to="/contact">Contact Us</Link></li>
-              <li class="indigo darken-3"><Link to="/location">Location</Link></li>
+              <li class="indigo darken-3"><Link to="/">HOME</Link></li>
+              <li class="indigo darken-3"><Link to="/about">ABOUT</Link></li>
+              <li class="indigo darken-3"><Link to="/contact">CONTACT</Link></li>
+              <li class="indigo darken-3"><Link to="/location">LOCATION</Link></li>
             </ul>
           </div>
         </nav>
