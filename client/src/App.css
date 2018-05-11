@@ -1,28 +1,43 @@
-.App {
-  /* text-align: center; */
+/*  LOGO _____________________________________________________________________*/
+#ssc-logo-img {
+  margin-top: 5px;
+  width: 200px;
+}
+#ssc-logo-link {
+  vertical-align: middle;
 }
 
-.App-logo {
-  /* animation: App-logo-spin infinite 20s linear;
-  height: 80px; */
+/*  GENERAL ___________________________________________________________________*/
+.panel-lg {
+  height: 500px;
+  background-color: white;
+  opacity: 0.6;
+}
+.filler-div {
+  height: 200px;
+}
+.row {
+  margin-bottom: 0px;
 }
 
-.App-header {
-  /* background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white; */
+/*  HEADER ___________________________________________________________________*/
+#home-component {
+  margin: auto;
+  width: 90%;
+  padding: 50px;
+  border-left: 20px solid #283593;
 }
 
-.App-title {
-  /* font-size: 1.5em; */
+/*  FOOTER ___________________________________________________________________*/
+#footer-content {
+  height: 300px;
+  padding: 40px;
+  color: white;
+  align-items: center;
 }
-
-.App-intro {
-  /* font-size: large; */
+.footer-box {
+  height: 100%;
 }
-
-@keyframes App-logo-spin {
-  /* from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); } */
+.footer-border {
+  border-left: 1px solid white;
 }

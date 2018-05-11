@@ -10,16 +10,20 @@ class Header extends Component {
     // const targetTab = "_blank";
 
     return (
-      <nav>
-        <div class="nav-wrapper white">
-          <a href="/"><img src={sscLogo} style={{marginTop: '10px', width: '200px'}}/></a>
-          <ul id="nav-mobile" class="right">
-            <li class="indigo darken-3"><Link to="/about">About Us</Link></li>
-            <li class="indigo darken-3"><Link to="/contact">Contact Us</Link></li>
-            <li class="indigo darken-3"><Link to="/location">Location</Link></li>
-          </ul>
-        </div>
-      </nav>
+      <div id="header-component">
+        <nav>
+          <div class="nav-wrapper white">
+            <a id="ssc-logo-link" href="/"><img id="ssc-logo-img" src={sscLogo}/></a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+              <li class="indigo darken-3"><Link to="/">Home</Link></li>
+              <li class="indigo darken-3"><Link to="/about">About Us</Link></li>
+              <li class="indigo darken-3"><Link to="/contact">Contact Us</Link></li>
+              <li class="indigo darken-3"><Link to="/location">Location</Link></li>
+            </ul>
+          </div>
+        </nav>
+        <div class="filler-div"></div>
+      </div>
     );
   }
 }
