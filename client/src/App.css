@@ -26,7 +26,7 @@
   padding: 50px;
   background-color:  rgba(204, 204, 204, 0.5);
   color: white;
-  /* border-left: 20px solid #283593; */
+  border-left: 20px solid #283593;
   /* border-radius: 5px; */
 }
 .home-div1 {
@@ -37,16 +37,40 @@
     /* border-radius: 5px; */
 }
 
+.width50 {
+    width: 50%;
+}
+
 /*  FOOTER ___________________________________________________________________*/
 #footer-content {
   height: 300px;
   padding: 40px;
   color: white;
-  align-items: center;
+  margin: auto;
 }
 .footer-box {
   height: 100%;
 }
 .footer-border {
   border-left: 1px solid white;
+}
+
+
+
+
+
+@media only screen and (max-width: 600px) {
+    #home-component {
+        padding: 10px;
+      background-color:  rgba(40, 53, 147, 0.95);
+      color: white;
+    }
+
+    .home-div1 {
+        font-size: 8px;
+    }
+
+    .width50 {
+        width: 100%;
+    }
 }

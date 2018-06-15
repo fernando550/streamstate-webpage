@@ -1,6 +1,5 @@
 import React, {Component} from "react";
-import sscLogo from '../images/sscLogo.png';
-import {Link} from "react-router-dom";
+// import {Link} from "react-router-dom";
 
 class Header extends Component {
   render() {

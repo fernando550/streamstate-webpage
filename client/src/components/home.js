@@ -8,7 +8,7 @@ class Home extends Component {
             <div>
                 <p style={{fontSize: '25px'}}>Developing practical solutions to impractical problems</p>
             </div>
-            <div style={{width: '50%'}}>
+            <div class="width50">
                 <p style={{fontSize: '18px'}}>
                     Engineers and analysts on our team possess a passion for learning
                     and the pursuit of excellence. Fine tuning your extensive needs,
