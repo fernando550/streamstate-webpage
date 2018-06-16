@@ -22,16 +22,16 @@
 /*  HEADER ___________________________________________________________________*/
 #home-component {
   margin: auto;
-  width: 90%;
-  padding: 50px;
+  width: 100%;
+  padding: 50px 0px 50px 0px;
   background-color:  rgba(204, 204, 204, 0.5);
   color: white;
-  border-left: 20px solid #283593;
+  /* border-left: 20px solid #283593; */
   /* border-radius: 5px; */
 }
 .home-div1 {
     height: 50%;
-    padding: 2%;
+    padding: 5%;
     background-color:  rgba(40, 53, 147, 0.95);
     font-size: 8px;
     /* border-radius: 5px; */
@@ -50,20 +50,16 @@
 }
 .footer-box {
   height: 100%;
-}
-.footer-border {
   border-left: 1px solid white;
+  word-wrap: break-word;
 }
-
-
-
 
 
 @media only screen and (max-width: 600px) {
     #home-component {
         padding: 10px;
-      background-color:  rgba(40, 53, 147, 0.95);
-      color: white;
+        background-color:  rgba(40, 53, 147, 0.95);
+        color: white;
     }
 
     .home-div1 {
@@ -72,5 +68,17 @@
 
     .width50 {
         width: 100%;
+    }
+
+    #footer-content {
+      height: 100%;
+      padding: 10px;
+      color: white;
+      margin: auto;
+    }
+
+    .footer-box {
+        height: 100%;
+        border-left: 0px solid white;
     }
 }
