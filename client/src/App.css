@@ -7,7 +7,7 @@
   vertical-align: middle;
 }
 
-/*  GENERAL ___________________________________________________________________*/
+/*  CONTAINERS ___________________________________________________________________*/
 .panel-lg {
   height: 500px;
   background-color: white;
@@ -21,53 +21,54 @@
 
 /*  HEADER ___________________________________________________________________*/
 #home-component {
-  margin: auto;
-  width: 100%;
-  padding: 50px 0px 50px 0px;
-  background-color:  rgba(204, 204, 204, 0.5);
-  color: white;
+  /* padding: 50px 0px 50px 0px; */
+  /* background-color:  rgba(204, 204, 204, 0.5); */
+    background-color:  rgba(40, 53, 147, 0.95);
+    height: 100%;
   /* border-left: 20px solid #283593; */
-  /* border-radius: 5px; */
 }
 .home-div1 {
-    height: 50%;
+    margin: auto;
     padding: 5%;
-    background-color:  rgba(40, 53, 147, 0.95);
-    font-size: 8px;
-    /* border-radius: 5px; */
+    color: white;
+    text-align: center;
+    width: 60%;
 }
 
-.width50 {
-    width: 50%;
-}
 
 /*  FOOTER ___________________________________________________________________*/
 #footer-content {
-  height: 300px;
+  margin: auto;
+  height: 100%;
   padding: 40px;
   color: white;
-  margin: auto;
 }
 .footer-box {
   height: 100%;
-  border-left: 1px solid white;
   word-wrap: break-word;
 }
 
+#mobile-nav a {
+    color: white;
+}
+
+#mobile-menu {
+    float: right;
+    color:  rgba(40, 53, 147, 0.95);
+}
+
+.sidenav-trigger {
+
+}
 
 @media only screen and (max-width: 600px) {
     #home-component {
         padding: 10px;
-        background-color:  rgba(40, 53, 147, 0.95);
-        color: white;
     }
-
     .home-div1 {
         font-size: 8px;
-    }
-
-    .width50 {
-        width: 100%;
+        width:100%;
+        margin: auto;
     }
 
     #footer-content {
@@ -75,10 +76,5 @@
       padding: 10px;
       color: white;
       margin: auto;
-    }
-
-    .footer-box {
-        height: 100%;
-        border-left: 0px solid white;
     }
 }
