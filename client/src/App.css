@@ -7,7 +7,7 @@
   vertical-align: middle;
 }
 
-/*  CONTAINERS ___________________________________________________________________*/
+/*  GENERAL ___________________________________________________________________*/
 .panel-lg {
   height: 500px;
   background-color: white;
@@ -18,63 +18,158 @@
 .row {
   margin-bottom: 0px;
 }
+button {
+  font-family: Roboto;
+}
+.btn {
+  height: 45px;
+  width: 110px;
+}
+.bold {
+  font-weight: bold;
+}
 
 /*  HEADER ___________________________________________________________________*/
 #home-component {
   /* padding: 50px 0px 50px 0px; */
   /* background-color:  rgba(204, 204, 204, 0.5); */
-    background-color:  rgba(40, 53, 147, 0.95);
-    height: 100%;
+  background-color:  rgba(40, 53, 147, 0.7);
+  height: 100%;
+  width: 80%;
+  margin: auto;
   /* border-left: 20px solid #283593; */
 }
-.home-div1 {
-    margin: auto;
-    padding: 5%;
-    color: white;
-    text-align: center;
-    width: 60%;
+#home-div1 {
+  margin: auto;
+  padding: 5%;
+  color: white;
+  text-align: center;
 }
-
+#home-inner-div1 {
+  margin: auto;
+  width: 60%;
+}
 
 /*  FOOTER ___________________________________________________________________*/
 #footer-content {
   margin: auto;
   height: 100%;
-  padding: 40px;
+  padding: 10px 40px 40px 40px;
   color: white;
 }
-.footer-box {
+#footer-box {
   height: 100%;
   word-wrap: break-word;
 }
-
 #mobile-nav a {
-    color: white;
+  color: white;
 }
-
 #mobile-menu {
-    float: right;
-    color:  rgba(40, 53, 147, 0.95);
+  float: right;
+  color:  rgba(40, 53, 147, 0.95);
 }
 
-.sidenav-trigger {
+/*  Twitter APP Login ___________________________________________________________________*/
 
+#login-warning {
+  color: white;
+  width: 350px;
+  border-radius: 2px;
+  padding: 5px;
+  margin: auto;
+}
+#login-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  height: 50px;
+  padding: 10px 0px 10px 0px;
+  border-radius: 5px 5px 0px 0px;
+}
+/* label underline focus color */
+#username:focus {
+  border-bottom: 1px solid #1a237e;
+  box-shadow: 0 1px 0 0 #000;
+}
+#password:focus {
+  border-bottom: 1px solid #1a237e;
+  box-shadow: 0 1px 0 0 #000;
+}
+#username:focus + label {
+  color: #1a237e;
+}
+#password:focus + label {
+  color: #1a237e;
+}
+#ttapp-panel {
+  background-color:  transparent;
+  /* width: 300px;
+  height: 350px; */
+  margin: auto;
+}
+#ttapp-login {
+  height: 100%;
+  margin: auto;
+}
+#ttapp-login-box {
+  border-radius: 5px;
+  /* padding: 30px; */
+  width: 275px;
+  height: 325px;
+  background-color: rgba(179, 179, 179, 0.8);
+  margin-top: 10px;
+}
+#dashboard-component {
+  height: 100%;
+  background-color: rgba(179, 179, 179, 0.8);
+}
+.dash-menu-row {
+  height: 60px;
+  background-color: #1a237e;
+}
+.dash-menu-row a {
+  height:100%;
+  width: 100%;
+  color: white;
+  /* font-weight: bold; */
+  /* margin:auto; */
+  display: inline-block;
+  line-height: 55px;
+  text-align: center;
+}
+.dash-menu-row a:hover {
+  /* font-weight: bold; */
+  color: #1a237e;
+  background-color: white;
+}
+.dashboard-child-component {
+  margin: 3%;
+}
+.fileupload-func-panel {
+  background-color: white;
+  padding: 1%;
+  border-radius: 5px;
 }
 
+/*  MEDIA ___________________________________________________________________*/
 @media only screen and (max-width: 600px) {
-    #home-component {
-        padding: 10px;
-    }
-    .home-div1 {
-        font-size: 8px;
-        width:100%;
-        margin: auto;
-    }
-
-    #footer-content {
-      height: 100%;
-      padding: 10px;
-      color: white;
-      margin: auto;
-    }
+  #home-component {
+    padding: 5px;
+    width: 100%;
+  }
+  .home-div1 {
+    font-size: 8px;
+    width: 100%;
+    margin: auto;
+  }
+  #home-inner-div1 {
+    margin: auto;
+    width: 80%;
+  }
+  #footer-content {
+  height: 100%;
+  padding: 10px;
+  color: white;
+  margin: auto;
+  }
 }

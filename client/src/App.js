@@ -9,6 +9,7 @@ import Home from "./components/home";
 import About from "./components/about";
 import Contact from "./components/contact";
 import Location from "./components/location";
+import ttApp from './components/ttApp';
 
 class App extends Component {
   render() {
@@ -20,6 +21,7 @@ class App extends Component {
             <Route path="/about" component={About} />
             <Route path="/contact" component={Contact} />
             <Route path="/location" component={Location} />
+            <Route path="/twitter-tool-login" component={ttApp} />
           <Footer/>
         </div>
       </BrowserRouter>
