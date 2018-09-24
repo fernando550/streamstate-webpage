@@ -5,6 +5,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const Twit = require('twit');
 const XLSX = require('xlsx');
+const Timeout = require('await-timeout');
 
 // START EXPRESS APP ROUTING
 const app = express();
@@ -31,11 +32,8 @@ app.post('/ttapi/login', async (req, res) => {
 
 // PROGRAM INITIALIZATION
 app.post('/ttapi/fileparse', async (req, res) => {
-  console.log('Route accessed: /ttapi/fileparse');
-  // console.log('incoming data \n', req.body);
-
+  console.log('Route accessed: /ttapi/userparse');
   let T;
-
   try {
     T = new Twit({
       consumer_key: process.env.consumer_key,
@@ -48,43 +46,256 @@ app.post('/ttapi/fileparse', async (req, res) => {
     console.log('Twit Object error: \n', err);
   }
 
-  try {
-    var dataArray = [];
-    var i;
-    var c=0;
+  console.log('data: \n', req.body.data);
+  //start call
+  twitData(req.body.data);
 
-    console.log("retrieving data...");
+  async function twitData(inputData) {
+    //get initial list of friend ids and map their usernames
+    console.log(inputData)
 
-    T.get('friends/list', { screen_name: 'tolga_tezel', count: 5},  function getData(err, data, response) {
+    var userNamesList1 = [];
+    var promises = [];
+    var i = 0;
+    var j = 0;
 
-      for (i = 0; i<data.users.length; i++) {
-        // console.log("page: ", c, "\n", "user: ", i);
-        dataArray.push({
-          "USER_ID": data.users[i].id,
-          "USER_NAME": data.users[i].name,
-          "SCREEN_NAME": data.users[i].screen_name,
-          "FOLLOWER_COUNT": data.users[i].followers_count,
-          "LOCATION": data.users[i].location,
-          "VERIFIED": data.users[i].verified,
-          "DATE_JOINED": data.users[i].created_at
-        });
-      }
+    inputData.forEach(array => {
+      array.forEach(user => {
+        userNamesList1.push(user);
+      });
+    });
 
-      c +=1
+    console.log("userNamesList1: ", userNamesList1);
 
-      if (c<4) {
-        T.get('friends/list', { screen_name: 'tolga_tezel', count: 5, cursor: data['next_cursor'] }, getData);
-      } else {
-        console.log("data collection completed: ", dataArray.length);
-        console.log(dataArray);
-        res.send(dataArray);
+    const userIdsAoAPromise = userNamesList1.map(async (name, i) => {
+      const params = {screen_name: name};
+      try {
+        const timer = new Timeout();
+        const userIdList = await timer.set(i*60000+2000)
+          .then(async () => {
+            const friendsList = await T.get("friends/ids", params)
+            return friendsList.data.ids
+          });
+        return userIdList
+      } catch(e) {
+        // console.log('ERROR')
       }
     });
-  } catch(err) {
-    console.log("data collection error: ", err);
+
+    const userIdsAoAUnfiltered = await Promise.all(userIdsAoAPromise);
+    const userIdsAoA = [];
+    userIdsAoAUnfiltered.forEach(array => {
+      var temp = array.filter(user => user !=undefined);
+      userIdsAoA.push(temp);
+    });
+
+    console.log("user ids: ", userIdsAoA.length);
+
+    const outputCount = {}
+    userIdsAoA.forEach(array => {
+      array.forEach(user => {
+        if (outputCount[user]) {
+          outputCount[user] += 1;
+        } else {
+          outputCount[user] = 1;
+        }
+      })
+    });
+    //
+    const outputUsers = Object.keys(outputCount);
+    console.log("outputUsers length: ", outputUsers.length);
+
+    promises2 = []
+    var i=0
+    var j=0
+
+    do {
+      const params = {user_id: outputUsers.slice(i,i+100)}
+      try {
+        const timer = new Timeout();
+        const C = await timer.set(j*300+50)
+          .then(async () => {
+            const A = await T.get("users/lookup", params)
+            const B = A.data.map(user => {
+              const userObj = {
+                "USER_ID": user.id,
+                "USER_NAME": user.name,
+                "SCREEN_NAME": user.screen_name,
+                "FOLLOWER_COUNT": user.followers_count,
+                "LOCATION": user.location,
+                "VERIFIED": user.verified,
+                "DATE_JOINED": user.created_at
+              }
+              // console.log(userObj)
+              return userObj
+            })
+            return B
+          });
+        promises2.push(C);
+      } catch(e) {
+        // console.log('ERROR')
+      }
+      i+=100
+      j+=1
+    } while (i<outputUsers.length)
+
+    const promiseResult2 = await Promise.all(promises2);
+    const userNamesList2 = [];
+    promiseResult2.forEach(array =>
+      array.forEach(user =>
+        userNamesList2.push(user)
+      )
+    );
+
+    userNamesList2.forEach(obj => {
+      const objID = String(obj.USER_ID)
+      obj.MUTUAL_COUNT = outputCount[objID];
+    });
+
+    console.log("userNamesList2 length: ", userNamesList2);
+    res.send(userNamesList2);
   }
 });
 
+app.post('/ttapi/userparse', async (req, res) => {
+  console.log('Route accessed: /ttapi/userparse');
+  let T;
+  try {
+    T = new Twit({
+      consumer_key: process.env.consumer_key,
+      consumer_secret: process.env.consumer_secret,
+      app_only_auth: true
+      // timeout_ms: 60*1000,  // optional HTTP request timeout to apply to all requests.
+    });
+    console.log('Twit Object: \n', T);
+  } catch (err) {
+    console.log('Twit Object error: \n', err);
+  }
+
+  const defaultParams = {screen_name: req.body.data};
+  console.log('user: \n', defaultParams);
+  //start call
+  T.get("friends/ids", defaultParams, async (error, data) => {
+    //get initial list of friend ids and map their usernames
+    var promises = [];
+    var i = 0;
+    var j = 0;
+
+    do {
+      const params = {user_id: data.ids.slice(i,i+100)}
+      try {
+        const timer = new Timeout();
+        const C = await timer.set(j*300+50)
+          .then(async () => {
+            const A = await T.get("users/lookup", params)
+            const B = A.data.map(user => user.screen_name)
+            return B
+          });
+        promises.push(C);
+      } catch(e) {
+        // console.log('ERROR')
+      }
+      i+=100
+      j+=1
+    } while (i<data.ids.length)
+
+    const promiseResult = await Promise.all(promises);
+    const userNamesList1 = [];
+    promiseResult.forEach(array =>
+      array.forEach(user =>
+        userNamesList1.push(user)
+      )
+    );
+
+    console.log("userNamesList1 length: ", userNamesList1.length);
+
+    const userIdsAoAPromise = userNamesList1.slice(0,2).map(async (name, i) => {
+      const params = {screen_name: name};
+      try {
+        const timer = new Timeout();
+        const userIdList = await timer.set(i*6000+2000)
+          .then(async () => {
+            const friendsList = await T.get("friends/ids", params)
+            return friendsList.data.ids
+          });
+          return userIdList
+          // return username.data.screen_name;
+      } catch(e) {
+        // console.log('ERROR')
+      }
+    });
+
+    const userIdsAoAUnfiltered = await Promise.all(userIdsAoAPromise);
+    const userIdsAoA = [];
+    userIdsAoAUnfiltered.forEach(array => {
+      var temp = array.filter(user => user !=undefined);
+      userIdsAoA.push(temp);
+    });
+
+    const outputCount = {}
+    userIdsAoA.forEach(array => {
+      array.forEach(user => {
+        if (outputCount[user]) {
+          outputCount[user] += 1;
+        } else {
+          outputCount[user] = 1;
+        }
+      })
+    });
+
+    const outputUsers = Object.keys(outputCount);
+    console.log("outputUsers length: ", outputUsers.length);
+
+    promises2 = []
+    var i=0
+    var j=0
+    do {
+      const params = {user_id: outputUsers.slice(i,i+100)}
+      try {
+        const timer = new Timeout();
+        const C = await timer.set(j*300+50)
+          .then(async () => {
+            const A = await T.get("users/lookup", params)
+            const B = A.data.map(user => {
+              const userObj = {
+                "USER_ID": user.id,
+                "USER_NAME": user.name,
+                "SCREEN_NAME": user.screen_name,
+                "FOLLOWER_COUNT": user.followers_count,
+                "LOCATION": user.location,
+                "VERIFIED": user.verified,
+                "DATE_JOINED": user.created_at
+              }
+              // console.log(userObj)
+              return userObj
+            })
+            return B
+          });
+        promises2.push(C);
+      } catch(e) {
+        // console.log('ERROR')
+      }
+      i+=100
+      j+=1
+    } while (i<outputUsers.length)
+
+    const promiseResult2 = await Promise.all(promises2);
+    const userNamesList2 = [];
+    promiseResult2.forEach(array =>
+      array.forEach(user =>
+        userNamesList2.push(user)
+      )
+    );
+
+    userNamesList2.forEach(obj => {
+      const objID = String(obj.USER_ID)
+      obj.MUTUAL_COUNT = outputCount[objID];
+    });
+
+    console.log("userNamesList2 length: ", userNamesList2.length);
+    res.send(userNamesList2);
+  });
+});
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('*', (req, res) => {

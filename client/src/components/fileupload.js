@@ -65,7 +65,8 @@ class FileUpload extends Component {
           "FOLLOWER_COUNT",
           "LOCATION",
           "VERIFIED",
-          "DATE_JOINED"
+          "DATE_JOINED",
+          "MUTUAL_COUNT"
         ]
       }
     );
@@ -97,6 +98,7 @@ class FileUpload extends Component {
       let res = await axios.post('/ttapi/userparse', {data: this.state.userName});
       let data = res.data;
       this.outputWorkbook(data);
+      console.log(data);
     } catch(err) {
       console.log(err);
     }
