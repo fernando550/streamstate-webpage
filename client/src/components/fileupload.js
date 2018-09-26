@@ -8,7 +8,8 @@ class FileUpload extends Component {
   // Initialize state
   state = {
     errorMsg: '',
-    loading: false,
+    loading1: false,
+    loading2: false,
     serverData: null,
     fileUpload: null,
     userName: null,
@@ -31,20 +32,21 @@ class FileUpload extends Component {
 
     if (e.target.id === 'fileForm') {
       this.setState({
-        loading: false,
-        disableUserParse: true
+        disableUserParse: true,
+        disableFileParse: true
       });
       await this.processFile();
     } else {
       this.setState({
-        loading: false,
+        disableUserParse: true,
         disableFileParse: true
       });
       await this.processUser();
     }
 
     this.setState({
-      loading: false,
+      loading1: false,
+      loading2: false,
       disableFileParse: false,
       disableUserParse: false
     });
@@ -76,6 +78,7 @@ class FileUpload extends Component {
   }
 
   processFile = async () => {
+    this.setState({loading1: true});
     try{
       await Papa.parse(this.state.fileUpload, {
       	complete: async (results) => {
@@ -93,6 +96,7 @@ class FileUpload extends Component {
   }
 
   processUser = async () => {
+    this.setState({loading2: true});
     try{
       console.log("axios user-parse request call...")
       let res = await axios.post('/ttapi/userparse', {data: this.state.userName});
@@ -131,7 +135,7 @@ class FileUpload extends Component {
             <div
               class="preloader-wrapper small active"
               style={{
-              display: (this.state.loading ? 'block' : 'none')
+              display: (this.state.loading1 ? 'block' : 'none')
             }}>
               <div class="spinner-layer spinner-blue-only">
                 <div class="circle-clipper left">
@@ -166,7 +170,7 @@ class FileUpload extends Component {
             <div
               class="preloader-wrapper small active"
               style={{
-              display: (this.state.loading ? 'block' : 'none')
+              display: (this.state.loading2 ? 'block' : 'none')
             }}>
               <div class="spinner-layer spinner-blue-only">
                 <div class="circle-clipper left">

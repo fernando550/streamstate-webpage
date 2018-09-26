@@ -150,6 +150,7 @@ app.post('/ttapi/fileparse', async (req, res) => {
     userNamesList2.forEach(obj => {
       const objID = String(obj.USER_ID)
       obj.MUTUAL_COUNT = outputCount[objID];
+      obj.MUTUAL_PERCENT_COUNT = Math.round((outputCount[objID]/outputUsers.length)*100)/100;
     });
 
     console.log("userNamesList2 length: ", userNamesList2);
@@ -209,11 +210,11 @@ app.post('/ttapi/userparse', async (req, res) => {
 
     console.log("userNamesList1 length: ", userNamesList1.length);
 
-    const userIdsAoAPromise = userNamesList1.slice(0,2).map(async (name, i) => {
+    const userIdsAoAPromise = userNamesList1.map(async (name, i) => {
       const params = {screen_name: name};
       try {
         const timer = new Timeout();
-        const userIdList = await timer.set(i*6000+2000)
+        const userIdList = await timer.set(i*60000+2000)
           .then(async () => {
             const friendsList = await T.get("friends/ids", params)
             return friendsList.data.ids
@@ -290,6 +291,7 @@ app.post('/ttapi/userparse', async (req, res) => {
     userNamesList2.forEach(obj => {
       const objID = String(obj.USER_ID)
       obj.MUTUAL_COUNT = outputCount[objID];
+      obj.MUTUAL_PERCENT_COUNT = Math.round((outputCount[objID]/outputUsers.length)*100)/100;
     });
 
     console.log("userNamesList2 length: ", userNamesList2.length);
