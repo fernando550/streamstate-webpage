@@ -5,6 +5,7 @@
 
 # testing
 /coverage
+test.js
 
 # production
 /build
