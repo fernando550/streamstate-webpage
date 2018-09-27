@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import Papa from 'papaparse';
 import XLSX from 'xlsx';
+const Timeout = require('await-timeout');
 
 class FileUpload extends Component {
 
@@ -68,7 +69,8 @@ class FileUpload extends Component {
           "LOCATION",
           "VERIFIED",
           "DATE_JOINED",
-          "MUTUAL_COUNT"
+          "MUTUAL_COUNT",
+          "MUTUAL_PERCENT_COUNT"
         ]
       }
     );
@@ -99,10 +101,82 @@ class FileUpload extends Component {
     this.setState({loading2: true});
     try{
       console.log("axios user-parse request call...")
-      let res = await axios.post('/ttapi/userparse', {data: this.state.userName});
-      let data = res.data;
-      this.outputWorkbook(data);
-      console.log(data);
+      let res1 = await axios.post('/ttapi/userparse1', {data: this.state.userName});
+      let data1 = res1.data;
+      console.log("friend ids: ", data1)
+      console.log("slice friend ids: ", data1.slice(0,100))
+      // let res2 = await axios.post('ttapi/userparse2', {data: data.slice(0,100)});
+      // let data2 = res2.data
+      // console.log(data2);
+      var promises = [];
+      var i = 0;
+      var j = 0;
+
+      do {
+        try {
+          const timer = new Timeout();
+          const C = await timer.set(j*300+50)
+            .then(async () => {
+              const A = await axios.post('/ttapi/userparse2', {data: data1.slice(i,i+100)});
+              const B = A.data.map(user => user.screen_name)
+              return B
+            });
+          promises.push(C);
+        } catch(e) {
+          // console.log('ERROR')
+        }
+        i+=100
+        j+=1
+      } while (i<data1.length)
+
+      const promiseResult = await Promise.all(promises);
+      const userNamesList1 = [];
+      promiseResult.forEach(array =>
+        array.forEach(user =>
+          userNamesList1.push(user)
+        )
+      );
+
+      console.log("userlist length: ", userNamesList1.length);
+
+      const userIdsAoAPromise = userNamesList1.slice(0,2).map(async (name, i) => {
+        try {
+          const timer = new Timeout();
+          const userIdList = await timer.set(i*60000+2000)
+            .then(async () => {
+              const friendsList = await axios.post('/ttapi/userparse1', {data: name});
+              return friendsList.data
+            });
+            return userIdList
+            // return username.data.screen_name;
+        } catch(e) {
+          // console.log('ERROR')
+        }
+      });
+
+      const userIdsAoAUnfiltered = await Promise.all(userIdsAoAPromise);
+      const userIdsAoA = [];
+      userIdsAoAUnfiltered.forEach(array => {
+        var temp = array.filter(user => user !=undefined);
+        userIdsAoA.push(temp);
+      });
+
+      const outputCount = {}
+      userIdsAoA.forEach(array => {
+        array.forEach(user => {
+          if (outputCount[user]) {
+            outputCount[user] += 1;
+          } else {
+            outputCount[user] = 1;
+          }
+        })
+      });
+
+      const outputUsers = Object.keys(outputCount);
+      console.log("outputUsers length: ", outputUsers.length);
+
+      // this.outputWorkbook(data);
+      // console.log(data);
     } catch(err) {
       console.log(err);
     }
