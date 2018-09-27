@@ -1,5 +1,5 @@
 // PACKAGES
-// require('dotenv').config()
+require('dotenv').config()
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -41,7 +41,7 @@ app.post('/ttapi/userparse1', async (req, res) => {
       app_only_auth: true
       // timeout_ms: 60*1000,  // optional HTTP request timeout to apply to all requests.
     });
-    console.log('Twit Object: \n', T);
+    console.log('Twit Object: \n', true);
   } catch (err) {
     console.log('Twit Object error: \n', err);
   }
@@ -64,7 +64,7 @@ app.post('/ttapi/userparse2', async (req, res) => {
       app_only_auth: true
       // timeout_ms: 60*1000,  // optional HTTP request timeout to apply to all requests.
     });
-    console.log('Twit Object: \n', T);
+    console.log('Twit Object: \n', true);
   } catch (err) {
     console.log('Twit Object error: \n', err);
   }

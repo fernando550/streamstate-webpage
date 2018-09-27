@@ -33,12 +33,14 @@ class FileUpload extends Component {
 
     if (e.target.id === 'fileForm') {
       this.setState({
+        loading1: true,
         disableUserParse: true,
         disableFileParse: true
       });
       await this.processFile();
     } else {
       this.setState({
+        loading2: true,
         disableUserParse: true,
         disableFileParse: true
       });
@@ -80,15 +82,112 @@ class FileUpload extends Component {
   }
 
   processFile = async () => {
-    this.setState({loading1: true});
     try{
       await Papa.parse(this.state.fileUpload, {
       	complete: async (results) => {
       		console.log("papaparse results: \n", results);
           console.log("axios file-parse request call...")
-          let res = await axios.post('/ttapi/fileparse', {data: results.data});
-          let data = res.data;
-          this.outputWorkbook(data);
+
+          var userNamesList1 = [];
+          var promises = [];
+          var i = 0;
+          var j = 0;
+
+          results.data.forEach(array => {
+            array.forEach(user => {
+              userNamesList1.push(user);
+            });
+          });
+
+          console.log("userNamesList1: ", userNamesList1);
+
+          const userIdsAoAPromise = userNamesList1.map(async (name, i) => {
+            try {
+              const timer = new Timeout();
+              const userIdList = await timer.set(i*60000+2000)
+                .then(async () => {
+                  const friendsList = await axios.post('/ttapi/userparse1', {data: name});
+                  return friendsList.data
+                });
+              return userIdList
+            } catch(e) {
+              // console.log('ERROR')
+            }
+          });
+
+          const userIdsAoAUnfiltered = await Promise.all(userIdsAoAPromise);
+          const userIdsAoA = [];
+          userIdsAoAUnfiltered.forEach(array => {
+            var temp = array.filter(user => user !=undefined);
+            userIdsAoA.push(temp);
+          });
+
+          console.log("user ids: ", userIdsAoA.length);
+
+          const outputCount = {}
+          userIdsAoA.forEach(array => {
+            array.forEach(user => {
+              if (outputCount[user]) {
+                outputCount[user] += 1;
+              } else {
+                outputCount[user] = 1;
+              }
+            })
+          });
+          //
+          const outputUsers = Object.keys(outputCount);
+          console.log("outputUsers length: ", outputUsers.length);
+
+
+          var promises2 = []
+          var i=0
+          var j=0
+
+          do {
+            try {
+              const timer = new Timeout();
+              const C = await timer.set(j*300+50)
+                .then(async () => {
+                  const A = await await axios.post('/ttapi/userparse2', {data: outputUsers.slice(i,i+100)});
+                  const B = A.data.map(user => {
+                    const userObj = {
+                      "USER_ID": user.id,
+                      "USER_NAME": user.name,
+                      "SCREEN_NAME": user.screen_name,
+                      "FOLLOWER_COUNT": user.followers_count,
+                      "LOCATION": user.location,
+                      "VERIFIED": user.verified,
+                      "DATE_JOINED": user.created_at
+                    }
+                    // console.log(userObj)
+                    return userObj
+                  })
+                  return B
+                });
+              promises2.push(C);
+            } catch(e) {
+              // console.log('ERROR')
+            }
+            i+=100
+            j+=1
+          } while (i<outputUsers.length)
+
+          const promiseResult2 = await Promise.all(promises2);
+          const userNamesList2 = [];
+          promiseResult2.forEach(array =>
+            array.forEach(user =>
+              userNamesList2.push(user)
+            )
+          );
+
+          userNamesList2.forEach(obj => {
+            const objID = String(obj.USER_ID)
+            obj.MUTUAL_COUNT = outputCount[objID];
+            obj.MUTUAL_PERCENT_COUNT = Math.round((outputCount[objID]/outputUsers.length)*100)/100;
+          });
+
+          console.log("userNamesList2 length: ", userNamesList2);
+          this.outputWorkbook(userNamesList2);
       	}
       });
     } catch(err) {
@@ -98,16 +197,13 @@ class FileUpload extends Component {
   }
 
   processUser = async () => {
-    this.setState({loading2: true});
     try{
       console.log("axios user-parse request call...")
       let res1 = await axios.post('/ttapi/userparse1', {data: this.state.userName});
       let data1 = res1.data;
-      console.log("friend ids: ", data1)
-      console.log("slice friend ids: ", data1.slice(0,100))
-      // let res2 = await axios.post('ttapi/userparse2', {data: data.slice(0,100)});
-      // let data2 = res2.data
-      // console.log(data2);
+      console.log("friend ids: ", data1.length)
+      console.log("slice friend ids: ", data1.slice(0,100).length)
+
       var promises = [];
       var i = 0;
       var j = 0;
@@ -139,7 +235,7 @@ class FileUpload extends Component {
 
       console.log("userlist length: ", userNamesList1.length);
 
-      const userIdsAoAPromise = userNamesList1.slice(0,2).map(async (name, i) => {
+      const userIdsAoAPromise = userNamesList1.map(async (name, i) => {
         try {
           const timer = new Timeout();
           const userIdList = await timer.set(i*60000+2000)
@@ -175,7 +271,57 @@ class FileUpload extends Component {
       const outputUsers = Object.keys(outputCount);
       console.log("outputUsers length: ", outputUsers.length);
 
-      // this.outputWorkbook(data);
+      var promises2 = []
+      var i=0
+      var j=0
+      do {
+        try {
+          const timer = new Timeout();
+          const C = await timer.set(j*300+50)
+            .then(async () => {
+              const A = await axios.post('/ttapi/userparse2', {data: outputUsers.slice(i,i+100)});
+              const B = A.data.map(user => {
+                const userObj = {
+                  "USER_ID": user.id,
+                  "USER_NAME": user.name,
+                  "SCREEN_NAME": user.screen_name,
+                  "FOLLOWER_COUNT": user.followers_count,
+                  "LOCATION": user.location,
+                  "VERIFIED": user.verified,
+                  "DATE_JOINED": user.created_at
+                }
+                // console.log(userObj)
+                return userObj
+              })
+              return B
+            });
+          promises2.push(C);
+        } catch(e) {
+          // console.log('ERROR')
+        }
+        i+=100
+        j+=1
+      } while (i<outputUsers.length)
+
+      const promiseResult2 = await Promise.all(promises2);
+      const userNamesList2 = [];
+      promiseResult2.forEach(array =>
+        array.forEach(user =>
+          userNamesList2.push(user)
+        )
+      );
+
+      console.log("promiseResult2 length: ", promiseResult2.length)
+
+      userNamesList2.forEach(obj => {
+        const objID = String(obj.USER_ID)
+        obj.MUTUAL_COUNT = outputCount[objID];
+        obj.MUTUAL_PERCENT_COUNT = Math.round((outputCount[objID]/outputUsers.length)*100)/100;
+      });
+
+      console.log("userNamesList2 length: ", userNamesList2.length);
+
+      this.outputWorkbook(userNamesList2);
       // console.log(data);
     } catch(err) {
       console.log(err);
