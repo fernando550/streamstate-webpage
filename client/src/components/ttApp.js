@@ -38,7 +38,7 @@ class ttApp extends Component {
 
   render() {
     return (
-      <div class="panel-lg" id="ttapp-panel">
+      <div class="" id="ttapp-panel">
 
         {!this.state.confirmation &&
           <div id="ttapp-login">

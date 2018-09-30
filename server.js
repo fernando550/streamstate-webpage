@@ -1,5 +1,5 @@
 // PACKAGES
-// require('dotenv').config()
+require('dotenv').config()
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -69,11 +69,10 @@ app.post('/ttapi/userparse2', async (req, res) => {
     console.log('Twit Object error: \n', err);
   }
 
-  console.log('userlist: \n', req.body.data);
+  console.log('userlist exists?: \n', (req.body.data.length > 0 ? true : false));
   //start call
   T.get("users/lookup", {user_id: req.body.data}, async (error, data) => {
     res.send(data);
-    // res.send("userparse2 complete");
   });
 });
 

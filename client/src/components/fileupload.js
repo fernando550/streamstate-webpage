@@ -14,8 +14,10 @@ class FileUpload extends Component {
     serverData: null,
     fileUpload: null,
     userName: null,
-    disableUserParse: false,
-    disableFileParse: false
+    disableButton: false,
+    parseFriend: 'initializing, please wait...',
+    userListLength: '...',
+    wrapUp: ''
   }
 
   onChange = (e) => {
@@ -30,28 +32,37 @@ class FileUpload extends Component {
 
   handleSubmit = async (e) => {
   	e.preventDefault();
+    e.persist();
 
-    if (e.target.id === 'fileForm') {
+    if (e.target.id === "fileForm") {
       this.setState({
         loading1: true,
-        disableUserParse: true,
-        disableFileParse: true
+        disableButton: true
       });
+      console.log("fileForm Pressed!")
       await this.processFile();
-    } else {
+    }
+
+    if (e.target.id === "userForm") {
       this.setState({
         loading2: true,
-        disableUserParse: true,
-        disableFileParse: true
+        disableButton: true
       });
+      console.log("userForm Pressed!")
       await this.processUser();
     }
 
     this.setState({
+      errorMsg: '',
       loading1: false,
       loading2: false,
-      disableFileParse: false,
-      disableUserParse: false
+      serverData: null,
+      fileUpload: null,
+      userName: null,
+      disableButton: false,
+      parseFriend: 'initializing, please wait...',
+      userListLength: '...',
+      wrapUp: ''
     });
   }
 
@@ -71,8 +82,9 @@ class FileUpload extends Component {
           "LOCATION",
           "VERIFIED",
           "DATE_JOINED",
-          "MUTUAL_COUNT",
-          "MUTUAL_PERCENT_COUNT"
+          "MUTUAL_COUNT"
+          // ,
+          // "MUTUAL_PERCENT_COUNT"
         ]
       }
     );
@@ -85,110 +97,33 @@ class FileUpload extends Component {
     try{
       await Papa.parse(this.state.fileUpload, {
       	complete: async (results) => {
-      		console.log("papaparse results: \n", results);
-          console.log("axios file-parse request call...")
-
-          var userNamesList1 = [];
-          var promises = [];
-          var i = 0;
-          var j = 0;
+          console.log("initializing file-parser...")
+          var usernames = [];
 
           results.data.forEach(array => {
             array.forEach(user => {
-              userNamesList1.push(user);
+              usernames.push(user);
             });
           });
 
-          console.log("userNamesList1: ", userNamesList1);
+          console.log("Number of usernames retrieved: ", usernames.length)
 
-          const userIdsAoAPromise = userNamesList1.map(async (name, i) => {
-            try {
-              const timer = new Timeout();
-              const userIdList = await timer.set(i*60000+2000)
-                .then(async () => {
-                  const friendsList = await axios.post('/ttapi/userparse1', {data: name});
-                  return friendsList.data
-                });
-              return userIdList
-            } catch(e) {
-              // console.log('ERROR')
-            }
-          });
+          console.log("Retrieving friend IDs for list of user names found ...")
+          var userids = await this.findUserIds(usernames)
 
-          const userIdsAoAUnfiltered = await Promise.all(userIdsAoAPromise);
-          const userIdsAoA = [];
-          userIdsAoAUnfiltered.forEach(array => {
-            var temp = array.filter(user => user !=undefined);
-            userIdsAoA.push(temp);
-          });
+          console.log("aggregating list of mutual friends by IDs");
+          var outputCount, outputUsers;
+          [outputCount, outputUsers] = await this.mutualIds(userids)
 
-          console.log("user ids: ", userIdsAoA.length);
+          console.log("aggregated list exists?: ", (outputUsers.length > 0 ? true : false));
+          console.log("Retrieving user data from IDs list of mutual friends ...")
+          this.setState({wrapUp: "wrapping up, please wait approximately: " + Math.floor(outputUsers.length/2000) + " minutes " + (Math.round((outputUsers.length/2000)*10)/10)*60 + " seconds"});
 
-          const outputCount = {}
-          userIdsAoA.forEach(array => {
-            array.forEach(user => {
-              if (outputCount[user]) {
-                outputCount[user] += 1;
-              } else {
-                outputCount[user] = 1;
-              }
-            })
-          });
-          //
-          const outputUsers = Object.keys(outputCount);
-          console.log("outputUsers length: ", outputUsers.length);
+          var results = await this.finalize(outputCount, outputUsers)
+          console.log("finalized data exists?: ", (results.length > 0 ? true : false));
 
-
-          var promises2 = []
-          var i=0
-          var j=0
-
-          do {
-            try {
-              const timer = new Timeout();
-              const C = await timer.set(j*300+50)
-                .then(async () => {
-                  const A = await await axios.post('/ttapi/userparse2', {data: outputUsers.slice(i,i+100)});
-                  const B = A.data.map(user => {
-                    const userObj = {
-                      "USER_ID": user.id,
-                      "USER_NAME": user.name,
-                      "SCREEN_NAME": user.screen_name,
-                      "FOLLOWER_COUNT": user.followers_count,
-                      "LOCATION": user.location,
-                      "VERIFIED": user.verified,
-                      "DATE_JOINED": user.created_at
-                    }
-                    // console.log(userObj)
-                    return userObj
-                  })
-                  return B
-                });
-              promises2.push(C);
-            } catch(e) {
-              // console.log('ERROR')
-            }
-            i+=100
-            j+=1
-          } while (i<outputUsers.length)
-
-          const promiseResult2 = await Promise.all(promises2);
-          const userNamesList2 = [];
-          promiseResult2.forEach(array =>
-            array.forEach(user =>
-              userNamesList2.push(user)
-            )
-          );
-
-          userNamesList2.forEach(obj => {
-            const objID = String(obj.USER_ID)
-            obj.MUTUAL_COUNT = outputCount[objID];
-            obj.MUTUAL_PERCENT_COUNT = Math.round((outputCount[objID]/outputUsers.length)*100)/100;
-          });
-
-          console.log("userNamesList2 length: ", userNamesList2);
-          this.outputWorkbook(userNamesList2);
-      	}
+          this.outputWorkbook(results);
+        }
       });
     } catch(err) {
       console.log(err);
@@ -197,146 +132,183 @@ class FileUpload extends Component {
   }
 
   processUser = async () => {
+
     try{
-      console.log("axios user-parse request call...")
-      let res1 = await axios.post('/ttapi/userparse1', {data: this.state.userName});
-      let data1 = res1.data;
-      console.log("friend ids: ", data1.length)
-      console.log("slice friend ids: ", data1.slice(0,100).length)
+      console.log("initializing user-parser...")
+      let initResponse = await axios.post('/ttapi/userparse1', {data: this.state.userName});
+      let initData = initResponse.data;
+      console.log("Number of friend IDs retrieved: ", initData.length)
 
-      var promises = [];
-      var i = 0;
-      var j = 0;
+      console.log("Retrieving screen names from list of IDs ...")
+      var usernames = await this.findUserNames(initData)
 
-      do {
-        try {
-          const timer = new Timeout();
-          const C = await timer.set(j*300+50)
-            .then(async () => {
-              const A = await axios.post('/ttapi/userparse2', {data: data1.slice(i,i+100)});
-              const B = A.data.map(user => user.screen_name)
-              return B
-            });
-          promises.push(C);
-        } catch(e) {
-          // console.log('ERROR')
-        }
-        i+=100
-        j+=1
-      } while (i<data1.length)
+      console.log("Retrieved user names for: ", usernames.length, " out of ", initData.length, " user IDs");
+      this.setState({userListLength: String(usernames.length)})
 
-      const promiseResult = await Promise.all(promises);
-      const userNamesList1 = [];
-      promiseResult.forEach(array =>
-        array.forEach(user =>
-          userNamesList1.push(user)
-        )
-      );
+      console.log("Retrieving friend IDs for list of user names found ...")
+      var userids = await this.findUserIds(usernames)
 
-      console.log("userlist length: ", userNamesList1.length);
+      console.log("aggregating list of mutual friends by IDs");
+      var outputCount, outputUsers;
+      [outputCount, outputUsers] = await this.mutualIds(userids)
 
-      const userIdsAoAPromise = userNamesList1.map(async (name, i) => {
-        try {
-          const timer = new Timeout();
-          const userIdList = await timer.set(i*60000+2000)
-            .then(async () => {
-              const friendsList = await axios.post('/ttapi/userparse1', {data: name});
-              return friendsList.data
-            });
-            return userIdList
-            // return username.data.screen_name;
-        } catch(e) {
-          // console.log('ERROR')
-        }
-      });
+      console.log("aggregated list exists?: ", (outputUsers.length > 0 ? true : false));
+      console.log("Retrieving user data from IDs list of mutual friends ...")
+      this.setState({wrapUp: "wrapping up, please wait approximately: " + Math.floor(outputUsers.length/2000) + " minutes " + (Math.round((outputUsers.length/2000)*10)/10)*60 + " seconds"});
 
-      const userIdsAoAUnfiltered = await Promise.all(userIdsAoAPromise);
-      const userIdsAoA = [];
-      userIdsAoAUnfiltered.forEach(array => {
-        var temp = array.filter(user => user !=undefined);
-        userIdsAoA.push(temp);
-      });
+      var results = await this.finalize(outputCount, outputUsers)
+      console.log("finalized data exists?: ", (results.length > 0 ? true : false));
 
-      const outputCount = {}
-      userIdsAoA.forEach(array => {
-        array.forEach(user => {
-          if (outputCount[user]) {
-            outputCount[user] += 1;
-          } else {
-            outputCount[user] = 1;
-          }
-        })
-      });
-
-      const outputUsers = Object.keys(outputCount);
-      console.log("outputUsers length: ", outputUsers.length);
-
-      var promises2 = []
-      var i=0
-      var j=0
-      do {
-        try {
-          const timer = new Timeout();
-          const C = await timer.set(j*300+50)
-            .then(async () => {
-              const A = await axios.post('/ttapi/userparse2', {data: outputUsers.slice(i,i+100)});
-              const B = A.data.map(user => {
-                const userObj = {
-                  "USER_ID": user.id,
-                  "USER_NAME": user.name,
-                  "SCREEN_NAME": user.screen_name,
-                  "FOLLOWER_COUNT": user.followers_count,
-                  "LOCATION": user.location,
-                  "VERIFIED": user.verified,
-                  "DATE_JOINED": user.created_at
-                }
-                // console.log(userObj)
-                return userObj
-              })
-              return B
-            });
-          promises2.push(C);
-        } catch(e) {
-          // console.log('ERROR')
-        }
-        i+=100
-        j+=1
-      } while (i<outputUsers.length)
-
-      const promiseResult2 = await Promise.all(promises2);
-      const userNamesList2 = [];
-      promiseResult2.forEach(array =>
-        array.forEach(user =>
-          userNamesList2.push(user)
-        )
-      );
-
-      console.log("promiseResult2 length: ", promiseResult2.length)
-
-      userNamesList2.forEach(obj => {
-        const objID = String(obj.USER_ID)
-        obj.MUTUAL_COUNT = outputCount[objID];
-        obj.MUTUAL_PERCENT_COUNT = Math.round((outputCount[objID]/outputUsers.length)*100)/100;
-      });
-
-      console.log("userNamesList2 length: ", userNamesList2.length);
-
-      this.outputWorkbook(userNamesList2);
-      // console.log(data);
+      this.outputWorkbook(results);
     } catch(err) {
       console.log(err);
     }
   }
 
+  findUserNames = async (userids) => {
+    var promiseArray = [];
+    var i = 0;
+
+    do {
+      try {
+        const timer = new Timeout();
+        var start = Date.now();
+        const C = await timer.set(3100)
+          .then(async () => {
+            const A = await axios.post('/ttapi/userparse2', {data: userids.slice(i,i+100)});
+            const B = A.data.map(user => user.screen_name)
+            var end = Date.now() - start
+            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed users: ", String(i)," - ", String(i+100));
+            return B
+          });
+        promiseArray.push(C);
+      } catch(e) {
+        console.log(e)
+      }
+      i+=100
+    } while (i<userids.length)
+
+    const result = await Promise.all(promiseArray);
+    const usernames = [];
+    result.forEach(array =>
+      array.forEach(user =>
+        usernames.push(user)
+      )
+    );
+    return usernames
+  }
+
+  findUserIds = async (usernames) => {
+    var promiseArray = []
+    var i=0
+
+    do {
+      try {
+        const timer = new Timeout();
+        var start = Date.now();
+        const B = await timer.set(61000)
+          .then(async () => {
+            const A = await axios.post('/ttapi/userparse1', {data: usernames[i]});
+            this.setState({parseFriend: "processing user " + String(i+1) + " out of " + this.state.userListLength + " ..."})
+            var end = Date.now() - start
+            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed user: ", String(i), " name: ", usernames[i]);
+            return A.data
+          });
+          promiseArray.push(B);
+      } catch(e) {
+        console.log(e)
+      }
+      i+=1
+    } while (i<5) //userNamesList1.length)
+
+    const result = await Promise.all(promiseArray);
+    const userids = [];
+    result.forEach(array => {
+      if (array.length > 0) {
+        var temp = array.filter(user => user !== undefined);
+        userids.push(temp);
+      }
+    });
+    return userids
+  }
+
+  mutualIds = async(userids) => {
+    const outputCount = {}
+    userids.forEach(array => {
+      array.forEach(user => {
+        if (outputCount[user]) {
+          outputCount[user] += 1;
+        } else {
+          outputCount[user] = 1;
+        }
+      })
+    });
+    const outputUsers = Object.keys(outputCount);
+    return [outputCount, outputUsers]
+  }
+
+  finalize = async(userCount, userids) => {
+    var promiseArray = []
+    var i=0
+
+    do {
+      try {
+        const timer = new Timeout();
+        var start = Date.now();
+        const C = await timer.set(3100)
+          .then(async () => {
+            const A = await axios.post('/ttapi/userparse2', {data: userids.slice(i,i+100)});
+            const B = A.data.map(user => {
+              const userObj = {
+                "USER_ID": user.id,
+                "USER_NAME": user.name,
+                "SCREEN_NAME": user.screen_name,
+                "FOLLOWER_COUNT": user.followers_count,
+                "LOCATION": user.location,
+                "VERIFIED": user.verified,
+                "DATE_JOINED": user.created_at
+              }
+              return userObj
+            });
+            var end = Date.now() - start
+            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed users: ", String(i)," - ", String(i+100));
+            return B
+          });
+        promiseArray.push(C);
+      } catch(e) {
+        console.log(e)
+      }
+      i+=100
+    } while (i<userids.length)
+
+    const result = await Promise.all(promiseArray);
+    const usernames = [];
+    result.forEach(array =>
+      array.forEach(user =>
+        usernames.push(user)
+      )
+    );
+
+    usernames.forEach(obj => {
+      const objID = String(obj.USER_ID)
+      obj.MUTUAL_COUNT = userCount[objID];
+      // obj.MUTUAL_PERCENT_COUNT = Math.round((outputCount[objID]/outputUsers.length)*100)/100
+      // console.log(outputCount[objID])
+      // console.log(outputUsers.length)
+      // console.log(Math.round((outputCount[objID]/outputUsers.length)*100)/100)
+    });
+
+    return usernames
+  }
+
   render() {
     return (
       <div class="dashboard-child-component">
-
         <div class="row z-depth-5 fileupload-func-panel">
           <h6 class="bold">LIST PARSER</h6>
           <form id="fileForm" onSubmit={this.handleSubmit}>
             <div class="file-field input-field">
-              <div class="btn indigo darken-4">
+              <div class={"btn "  + (this.state.disableButton ? 'disabled' : 'indigo darken-4')}>
                 <span>UPLOAD<i class="material-icons right" style={{margin: '0px'}}>file_upload</i></span>
                 <input type="file" name="file" id="fileUpload" onChange={this.onChange}/>
               </div>
@@ -346,7 +318,7 @@ class FileUpload extends Component {
             </div>
 
             <button
-              class={"btn " + (this.state.disableFileParse ? 'disabled' : 'indigo darken-4 waves-effect waves-light')}
+              class={"btn " + (this.state.disableButton ? 'disabled' : 'indigo darken-4 waves-effect waves-light')}
               type="submit"
               name="action">
               Process
@@ -355,7 +327,9 @@ class FileUpload extends Component {
             <div
               class="preloader-wrapper small active"
               style={{
-              display: (this.state.loading1 ? 'block' : 'none')
+              top: '10px',
+              marginLeft: '5px',
+              display: (this.state.loading1 ? 'inline-block' : 'none')
             }}>
               <div class="spinner-layer spinner-blue-only">
                 <div class="circle-clipper left">
@@ -368,6 +342,17 @@ class FileUpload extends Component {
               </div>
             </div>
           </form>
+          <br/>
+          <div
+            class=""
+            style={{
+            marginTop: '10px',
+            display: (this.state.loading1 ? 'block' : 'none')
+          }}>
+            <p>user input: {this.state.userName}</p>
+            <p>{this.state.parseFriend}</p>
+            <p>{this.state.wrapUp}</p>
+          </div>
         </div>
 
         <br/>
@@ -381,7 +366,7 @@ class FileUpload extends Component {
             </div>
 
             <button
-              class={"btn " + (this.state.disableUserParse ? 'disabled' : 'indigo darken-4 waves-effect waves-light')}
+              class={"btn " + (this.state.disableButton ? 'disabled' : 'indigo darken-4 waves-effect waves-light')}
               type="submit"
               name="action">
               Process
@@ -390,7 +375,9 @@ class FileUpload extends Component {
             <div
               class="preloader-wrapper small active"
               style={{
-              display: (this.state.loading2 ? 'block' : 'none')
+              top: '10px',
+              marginLeft: '5px',
+              display: (this.state.loading2 ? 'inline-block' : 'none')
             }}>
               <div class="spinner-layer spinner-blue-only">
                 <div class="circle-clipper left">
@@ -403,8 +390,18 @@ class FileUpload extends Component {
               </div>
             </div>
           </form>
+          <br/>
+          <div
+            class=""
+            style={{
+            marginTop: '10px',
+            display: (this.state.loading2 ? 'block' : 'none')
+          }}>
+            <p>user input: {this.state.userName}</p>
+            <p>{this.state.parseFriend}</p>
+            <p>{this.state.wrapUp}</p>
+          </div>
         </div>
-
       </div>
     );
   }
