@@ -35,19 +35,11 @@ class FileUpload extends Component {
     e.persist();
 
     if (e.target.id === "fileForm") {
-      this.setState({
-        loading1: true,
-        disableButton: true
-      });
       console.log("fileForm Pressed!")
       await this.processFile();
     }
 
     if (e.target.id === "userForm") {
-      this.setState({
-        loading2: true,
-        disableButton: true
-      });
       console.log("userForm Pressed!")
       await this.processUser();
     }
@@ -79,6 +71,7 @@ class FileUpload extends Component {
           "USER_NAME",
           "SCREEN_NAME",
           "FOLLOWER_COUNT",
+          "DESCRIPTION",
           "LOCATION",
           "VERIFIED",
           "DATE_JOINED",
@@ -97,6 +90,11 @@ class FileUpload extends Component {
     try{
       await Papa.parse(this.state.fileUpload, {
       	complete: async (results) => {
+          this.setState({
+            loading1: true,
+            disableButton: true
+          });
+
           console.log("initializing file-parser...")
           var usernames = [];
 
@@ -106,9 +104,11 @@ class FileUpload extends Component {
             });
           });
 
+          this.setState({userListLength: "Users read on file: " + String(usernames.length)})
           console.log("Number of usernames retrieved: ", usernames.length)
+          this.setState({userListLength: String(usernames.length)})
 
-          console.log("Retrieving friend IDs for list of user names found ...")
+          console.log("Retrieving friend IDs for input list of users ...")
           var userids = await this.findUserIds(usernames)
 
           console.log("aggregating list of mutual friends by IDs");
@@ -117,7 +117,7 @@ class FileUpload extends Component {
 
           console.log("aggregated list exists?: ", (outputUsers.length > 0 ? true : false));
           console.log("Retrieving user data from IDs list of mutual friends ...")
-          this.setState({wrapUp: "wrapping up, please wait approximately: " + Math.floor(outputUsers.length/2000) + " minutes " + (Math.round((outputUsers.length/2000)*10)/10)*60 + " seconds"});
+          this.setState({wrapUp: "wrapping up, please wait approximately: " + Math.floor(outputUsers.length/2000) + " minutes " + ((Math.round((outputUsers.length/2000)*10)/10)-Math.floor(outputUsers.length/2000))*60 + " seconds"});
 
           var results = await this.finalize(outputCount, outputUsers)
           console.log("finalized data exists?: ", (results.length > 0 ? true : false));
@@ -134,6 +134,11 @@ class FileUpload extends Component {
   processUser = async () => {
 
     try{
+      this.setState({
+        loading2: true,
+        disableButton: true
+      });
+
       console.log("initializing user-parser...")
       let initResponse = await axios.post('/ttapi/userparse1', {data: this.state.userName});
       let initData = initResponse.data;
@@ -201,6 +206,13 @@ class FileUpload extends Component {
   findUserIds = async (usernames) => {
     var promiseArray = []
     var i=0
+    var limit = 0;
+
+    if (this.state.userListLength <= 600) {
+      limit = this.state.userListLength
+    } else (
+      limit = 600
+    )
 
     do {
       try {
@@ -219,7 +231,7 @@ class FileUpload extends Component {
         console.log(e)
       }
       i+=1
-    } while (i<5) //userNamesList1.length)
+    } while (i<limit) //userNamesList1.length)
 
     const result = await Promise.all(promiseArray);
     const userids = [];
@@ -264,6 +276,7 @@ class FileUpload extends Component {
                 "USER_NAME": user.name,
                 "SCREEN_NAME": user.screen_name,
                 "FOLLOWER_COUNT": user.followers_count,
+                "DESCRIPTION": user.description,
                 "LOCATION": user.location,
                 "VERIFIED": user.verified,
                 "DATE_JOINED": user.created_at
@@ -349,7 +362,7 @@ class FileUpload extends Component {
             marginTop: '10px',
             display: (this.state.loading1 ? 'block' : 'none')
           }}>
-            <p>user input: {this.state.userName}</p>
+            <p>users read from file: {this.state.fileUsers}</p>
             <p>{this.state.parseFriend}</p>
             <p>{this.state.wrapUp}</p>
           </div>
