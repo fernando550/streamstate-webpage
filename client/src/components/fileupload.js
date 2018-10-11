@@ -262,17 +262,17 @@ class FileUpload extends Component {
 
     var keys = Object.keys(outputCount)
     var percentile = Math.floor(keys.length*0.75)
-    console.log("90th percentile index: ", percentile)
+    // console.log("90th percentile index: ", percentile)
 
     var values = Object.values(outputCount)
     var sortValues = values.sort((a, b) => a - b)
-    console.log("sorted values: ", sortValues)
+    // console.log("sorted values: ", sortValues)
 
-    criteria = sortValues[percentile-1]
-    console.log("90th percentile value: ", criteria)
+    var criteria = sortValues[percentile-1]
+    // console.log("90th percentile value: ", criteria)
 
     var newObj = {}
-    keys.filter((key) => obj[key] >= criteria).forEach((key) => newObj[key] = obj[key])
+    keys.filter((key) => outputCount[key] >= criteria).forEach((key) => newObj[key] = outputCount[key])
     console.log(newObj.length)
 
     const outputUsers = Object.keys(newObj);
