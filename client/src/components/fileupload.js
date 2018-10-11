@@ -117,7 +117,7 @@ class FileUpload extends Component {
           var outputCount, outputUsers;
           [outputCount, outputUsers] = await this.mutualIds(userids)
 
-          this.setState({aggregateListLength: outputUsers.length})
+          this.setState({aggregateListLength: "number of mutual friends: " + outputUsers.length})
           console.log("aggregated list not empty?: ", (outputUsers.length > 0 ? true : false), "\n list length: ", outputUsers.length);
           console.log("Retrieving user data from IDs list of mutual friends ...")
           this.setState({wrapUp: "wrapping up, please wait approximately: " + Math.floor(outputUsers.length/2000) + " minutes "});
@@ -160,7 +160,7 @@ class FileUpload extends Component {
       var outputCount, outputUsers;
       [outputCount, outputUsers] = await this.mutualIds(userids)
 
-      this.setState({aggregateListLength: outputUsers.length})
+      this.setState({aggregateListLength: "number of mutual friends: " + outputUsers.length})
       console.log("aggregated list not empty?: ", (outputUsers.length > 0 ? true : false), "\n list length: ", outputUsers.length);
       console.log("Retrieving user data from IDs list of mutual friends ...")
       this.setState({wrapUp: "wrapping up, please wait approximately: " + Math.floor(outputUsers.length/2000) + " minutes "});
@@ -384,7 +384,7 @@ class FileUpload extends Component {
           }}>
             <p>users read from file: {this.state.fileUsers}</p>
             <p>{this.state.parseFriend}</p>
-            <p>{this.state.}
+            <p>{this.state.aggregateListLength}</p>
             <p>{this.state.wrapUp}</p>
           </div>
         </div>
@@ -433,6 +433,7 @@ class FileUpload extends Component {
           }}>
             <p>user input: {this.state.userName}</p>
             <p>{this.state.parseFriend}</p>
+            <p>{this.state.aggregateListLength}</p>
             <p>{this.state.wrapUp}</p>
           </div>
         </div>
