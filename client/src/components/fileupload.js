@@ -17,6 +17,7 @@ class FileUpload extends Component {
     disableButton: false,
     parseFriend: 'initializing, please wait...',
     userListLength: '...',
+    aggregateListLength: '',
     wrapUp: ''
   }
 
@@ -54,6 +55,7 @@ class FileUpload extends Component {
       disableButton: false,
       parseFriend: 'initializing, please wait...',
       userListLength: '...',
+      aggregateListLength: '',
       wrapUp: ''
     });
   }
@@ -115,9 +117,10 @@ class FileUpload extends Component {
           var outputCount, outputUsers;
           [outputCount, outputUsers] = await this.mutualIds(userids)
 
-          console.log("aggregated list exists?: ", (outputUsers.length > 0 ? true : false));
+          this.setState({aggregateListLength: outputUsers.length})
+          console.log("aggregated list not empty?: ", (outputUsers.length > 0 ? true : false), "\n list length: ", outputUsers.length);
           console.log("Retrieving user data from IDs list of mutual friends ...")
-          this.setState({wrapUp: "wrapping up, please wait approximately: " + Math.floor(outputUsers.length/2000) + " minutes " + ((Math.round((outputUsers.length/2000)*10)/10)-Math.floor(outputUsers.length/2000))*60 + " seconds"});
+          this.setState({wrapUp: "wrapping up, please wait approximately: " + Math.floor(outputUsers.length/2000) + " minutes "});
 
           var results = await this.finalize(outputCount, outputUsers)
           console.log("finalized data exists?: ", (results.length > 0 ? true : false));
@@ -157,9 +160,10 @@ class FileUpload extends Component {
       var outputCount, outputUsers;
       [outputCount, outputUsers] = await this.mutualIds(userids)
 
-      console.log("aggregated list exists?: ", (outputUsers.length > 0 ? true : false));
+      this.setState({aggregateListLength: outputUsers.length})
+      console.log("aggregated list not empty?: ", (outputUsers.length > 0 ? true : false), "\n list length: ", outputUsers.length);
       console.log("Retrieving user data from IDs list of mutual friends ...")
-      this.setState({wrapUp: "wrapping up, please wait approximately: " + Math.floor(outputUsers.length/2000) + " minutes " + (Math.round((outputUsers.length/2000)*10)/10)*60 + " seconds"});
+      this.setState({wrapUp: "wrapping up, please wait approximately: " + Math.floor(outputUsers.length/2000) + " minutes "});
 
       var results = await this.finalize(outputCount, outputUsers)
       console.log("finalized data exists?: ", (results.length > 0 ? true : false));
@@ -255,8 +259,24 @@ class FileUpload extends Component {
         }
       })
     });
-    const outputUsers = Object.keys(outputCount);
-    return [outputCount, outputUsers]
+
+    var keys = Object.keys(outputCount)
+    var percentile = Math.floor(keys.length*0.75)
+    console.log("90th percentile index: ", percentile)
+
+    var values = Object.values(outputCount)
+    var sortValues = values.sort((a, b) => a - b)
+    console.log("sorted values: ", sortValues)
+
+    criteria = sortValues[percentile-1]
+    console.log("90th percentile value: ", criteria)
+
+    var newObj = {}
+    keys.filter((key) => obj[key] >= criteria).forEach((key) => newObj[key] = obj[key])
+    console.log(newObj.length)
+
+    const outputUsers = Object.keys(newObj);
+    return [newObj, outputUsers]
   }
 
   finalize = async(userCount, userids) => {
@@ -364,6 +384,7 @@ class FileUpload extends Component {
           }}>
             <p>users read from file: {this.state.fileUsers}</p>
             <p>{this.state.parseFriend}</p>
+            <p>{this.state.}
             <p>{this.state.wrapUp}</p>
           </div>
         </div>
