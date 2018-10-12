@@ -289,7 +289,7 @@ class FileUpload extends Component {
     var criteria = sortValues[percentile-1]
     console.log("95th percentile value: ", criteria)
 
-    if (criteria/limit) < 0.05) {
+    if ((criteria/limit) < 0.05) {
       criteria = Math.floor(0.05*limit)
       console.log("NOTICE: USING NEW CRITERIA VALUE OF: ", criteria)
     }
