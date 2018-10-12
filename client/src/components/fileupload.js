@@ -45,19 +45,6 @@ class FileUpload extends Component {
       await this.processUser();
     }
 
-    this.setState({
-      errorMsg: '',
-      loading1: false,
-      loading2: false,
-      serverData: null,
-      fileUpload: null,
-      userName: null,
-      disableButton: false,
-      parseFriend: 'initializing, please wait...',
-      userListLength: '...',
-      aggregateListLength: '',
-      wrapUp: ''
-    });
   }
 
   outputWorkbook = (data) => {
@@ -126,6 +113,20 @@ class FileUpload extends Component {
           console.log("finalized data exists?: ", (results.length > 0 ? true : false));
 
           this.outputWorkbook(results);
+
+          this.setState({
+            errorMsg: '',
+            loading1: false,
+            loading2: false,
+            serverData: null,
+            fileUpload: null,
+            userName: null,
+            disableButton: false,
+            parseFriend: 'initializing, please wait...',
+            userListLength: '...',
+            aggregateListLength: '',
+            wrapUp: ''
+          });
         }
       });
     } catch(err) {
@@ -169,6 +170,20 @@ class FileUpload extends Component {
       console.log("finalized data exists?: ", (results.length > 0 ? true : false));
 
       this.outputWorkbook(results);
+
+      this.setState({
+        errorMsg: '',
+        loading1: false,
+        loading2: false,
+        serverData: null,
+        fileUpload: null,
+        userName: null,
+        disableButton: false,
+        parseFriend: 'initializing, please wait...',
+        userListLength: '...',
+        aggregateListLength: '',
+        wrapUp: ''
+      });
     } catch(err) {
       console.log(err);
     }
@@ -214,9 +229,12 @@ class FileUpload extends Component {
 
     if (this.state.userListLength <= 600) {
       limit = this.state.userListLength
-    } else (
+    } else {
+      this.setState({userListLength: 600})
       limit = 600
-    )
+    }
+
+    console.log("limit: ", limit);
 
     do {
       try {
@@ -261,19 +279,22 @@ class FileUpload extends Component {
     });
 
     var keys = Object.keys(outputCount)
-    var percentile = Math.floor(keys.length*0.75)
-    // console.log("90th percentile index: ", percentile)
+    var percentile = Math.floor(keys.length*0.90)
+    console.log("90th percentile index: ", percentile)
 
     var values = Object.values(outputCount)
     var sortValues = values.sort((a, b) => a - b)
-    // console.log("sorted values: ", sortValues)
+    console.log("sorted values: ", sortValues.length)
 
     var criteria = sortValues[percentile-1]
-    // console.log("90th percentile value: ", criteria)
+    console.log("90th percentile value: ", criteria)
 
-    var newObj = {}
-    keys.filter((key) => outputCount[key] >= criteria).forEach((key) => newObj[key] = outputCount[key])
-    console.log(newObj.length)
+    const newObj = {}
+    keys.filter((key) => outputCount[key] >= criteria).forEach((key) => {
+      var val = outputCount[key]
+      newObj[key] = val
+    })
+    console.log("newobj length: ", Object.keys(newObj).length)
 
     const outputUsers = Object.keys(newObj);
     return [newObj, outputUsers]
