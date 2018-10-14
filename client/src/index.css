@@ -9,6 +9,6 @@ body {
   font-family: 'Roboto', serif;
   /* font-family: 'Poppins', sans-serif; */
   /* font-family: 'Fira Sans', sans-serif; */
-  background-image: url('./images/main-background-ny.jpg');
-  background-size: auto;
+  /* background-image: url('./images/main-background-ny.jpg'); */
+  background-size:cover;
 }

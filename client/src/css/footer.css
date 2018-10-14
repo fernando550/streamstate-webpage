@@ -1,0 +1,13 @@
+/*  FOOTER */
+#footer-content {
+  margin: auto;
+  height: 100%;
+  padding: 10px 40px 40px 40px;
+  background-color: #fafafa;
+  color: black;
+  font-weight: bold;
+}
+#footer-box {
+  height: 100%;
+  word-wrap: break-word;
+}

@@ -1,0 +1,32 @@
+/*  LOGO */
+#ssc-logo-img {
+  margin-top: 5px;
+  width: 225px;
+}
+#ssc-logo-link {
+  vertical-align: middle;
+}
+
+/* NAV */
+.nav-wrapper {
+  background-color: #fafafa;
+}
+ul>li>a {
+  color: black;
+  font-weight: 900;
+}
+
+/* MOBILE NAV */
+#mobile-menu {
+  float: right;
+  color: black;
+}
+.sidenav li>a {
+  color: black;
+  display: block;
+  font-size: 14px;
+  font-weight: 900;
+  height: 48px;
+  line-height: 48px;
+  padding: 0 32px;
+}

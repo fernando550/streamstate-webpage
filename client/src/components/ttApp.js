@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import axios from 'axios';
 import Dashboard from "./dashboard";
 
-
 class ttApp extends Component {
   state = {
 	  userName: '',
@@ -13,15 +12,16 @@ class ttApp extends Component {
 
   handleSubmit = async (e) => {
   	e.preventDefault();
-  	try {
-  		let res = await axios.post('/ttapi/login', this.state);
-  		let data = res.data;
+
+		await axios.post('/ttapi/login', this.state)
+    .then((result) => {
+      var data = result.data;
       console.log("Server data: ", data)
   		this.setState({confirmation: data.confirmation, error: data.error});
-  	}
-  	catch (err) {
-  		console.log(err);
-  	}
+    })
+    .catch((error) => {
+      console.log(error)
+    })
   }
 
   onInputChange = (e) => {
@@ -38,17 +38,17 @@ class ttApp extends Component {
 
   render() {
     return (
-      <div class="" id="ttapp-panel">
+      <div>
 
         {!this.state.confirmation &&
-          <div id="ttapp-login">
+          <div>
             <div id="login-warning" class="red" style={{display: (this.state.error ? 'block' : 'none')}}>
               Invalid username or password, please try again
             </div>
 
             <div id="ttapp-login-box" class="row z-depth-5 center-align">
               <form class="col s12" onSubmit={this.handleSubmit}>
-                <div id="login-title" class="row indigo darken-4">
+                <div id="login-title" class="row">
                   Twitter Data-Miner
                 </div>
                 <div class="row" style={{padding: '20px 40px 0px 40px'}}>
@@ -62,7 +62,7 @@ class ttApp extends Component {
                       value={this.state.userName}
                       onChange={this.onInputChange}
                       />
-                    <label for="username" id="usernamelabel" style={{color: 'white'}}>Username:</label>
+                    <label for="username" id="usernamelabel" style={{color: 'black', fontWeight: 'bold'}}>Username:</label>
                   </div>
                   <div class="input-field col s12">
                     <input
@@ -74,16 +74,17 @@ class ttApp extends Component {
                       value={this.state.passWord}
                       onChange={this.onInputChange}
                       />
-                    <label for="password" id="passwordlabel" style={{color: 'white'}}>Password:</label>
+                    <label for="password" id="passwordlabel" style={{color: 'black', fontWeight: 'bold'}}>Password:</label>
                   </div>
                 </div>
                 <br />
                 <button
-                  class="btn indigo darken-4 waves-effect waves-light"
+                  id="tt-login-button"
+                  class="btn waves-effect waves-light"
                   type="submit"
                   name="action">
                   Login
-                  <i class="material-icons right">send</i>
+                  <i class="material-icons right">person</i>
                 </button>
               </form>
             </div>

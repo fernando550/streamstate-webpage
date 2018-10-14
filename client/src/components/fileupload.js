@@ -367,7 +367,7 @@ class FileUpload extends Component {
           <h6 class="bold">LIST PARSER</h6>
           <form id="fileForm" onSubmit={this.handleSubmit}>
             <div class="file-field input-field">
-              <div class={"btn "  + (this.state.disableButton ? 'disabled' : 'indigo darken-4')}>
+              <div class={"btn "  + (this.state.disableButton ? 'disabled' : 'grey darken-2')}>
                 <span>UPLOAD<i class="material-icons right" style={{margin: '0px'}}>file_upload</i></span>
                 <input type="file" name="file" id="fileUpload" onChange={this.onChange}/>
               </div>
@@ -377,7 +377,7 @@ class FileUpload extends Component {
             </div>
 
             <button
-              class={"btn " + (this.state.disableButton ? 'disabled' : 'indigo darken-4 waves-effect waves-light')}
+              class={"btn " + (this.state.disableButton ? 'disabled' : 'grey darken-2 waves-effect waves-light')}
               type="submit"
               name="action">
               Process
@@ -426,7 +426,7 @@ class FileUpload extends Component {
             </div>
 
             <button
-              class={"btn " + (this.state.disableButton ? 'disabled' : 'indigo darken-4 waves-effect waves-light')}
+              class={"btn " + (this.state.disableButton ? 'disabled' : 'grey darken-2 waves-effect waves-light')}
               type="submit"
               name="action">
               Process
