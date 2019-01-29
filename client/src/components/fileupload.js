@@ -369,7 +369,7 @@ class FileUpload extends Component {
         console.log(e)
       }
       i+=1
-    } while (i<2) //userNamesList1.length)
+    } while (i<limit) //userNamesList1.length)
 
     const result = await Promise.all(promiseArray);
     const userids = [];
