@@ -31,8 +31,8 @@ app.post('/ttapi/login', async (req, res) => {
 });
 
 // PROGRAM INITIALIZATION
-app.post('/ttapi/userparse1', async (req, res) => {
-  console.log('Route accessed: /ttapi/userparse1');
+app.post('/ttapi/getFriendIDs', async (req, res) => {
+  console.log('Route accessed: /ttapi/getFriendIDs');
   let T;
   try {
     T = new Twit({
@@ -54,8 +54,31 @@ app.post('/ttapi/userparse1', async (req, res) => {
   });
 });
 
-app.post('/ttapi/userparse2', async (req, res) => {
-  console.log('Route accessed: /ttapi/userparse2');
+app.post('/ttapi/getFollowerIDs', async (req, res) => {
+  console.log('Route accessed: /ttapi/getFollowerIDs');
+  let T;
+  try {
+    T = new Twit({
+      consumer_key: process.env.consumer_key,
+      consumer_secret: process.env.consumer_secret,
+      app_only_auth: true
+      // timeout_ms: 60*1000,  // optional HTTP request timeout to apply to all requests.
+    });
+    console.log('Twit Object: \n', true);
+  } catch (err) {
+    console.log('Twit Object error: \n', err);
+  }
+
+  const defaultParams = {screen_name: req.body.data};
+  console.log('user: \n', defaultParams);
+  //start call
+  T.get("followers/ids", defaultParams, async (error, data) => {
+    res.send(data.ids);
+  });
+});
+
+app.post('/ttapi/getUserNames', async (req, res) => {
+  console.log('Route accessed: /ttapi/getUserNames');
   let T;
   try {
     T = new Twit({
@@ -76,6 +99,27 @@ app.post('/ttapi/userparse2', async (req, res) => {
   });
 });
 
+app.post('/ttapi/getUserTweets', async (req, res) => {
+  console.log('Route accessed: /ttapi/getUserTweets');
+  let T;
+  try {
+    T = new Twit({
+      consumer_key: process.env.consumer_key,
+      consumer_secret: process.env.consumer_secret,
+      app_only_auth: true
+      // timeout_ms: 60*1000,  // optional HTTP request timeout to apply to all requests.
+    });
+    console.log('Twit Object: \n', true);
+  } catch (err) {
+    console.log('Twit Object error: \n', err);
+  }
+  const defaultParams = req.body
+  console.log("server params", defaultParams);
+  //start call
+  T.get("statuses/user_timeline", defaultParams, async (error, data) => {
+    res.send(data);
+  });
+});
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('*', (req, res) => {
