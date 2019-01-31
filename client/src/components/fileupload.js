@@ -524,7 +524,7 @@ class FileUpload extends Component {
     console.log("95th percentile value: ", criteria)
 
     if ((criteria/this.state.userListLength) < 0.05) {
-      var maxVal = Math.max(...sortValues))
+      var maxVal = Math.max(...sortValues)
       if (Math.floor(0.05*this.state.userListLength) > maxVal) {
         criteria = Math.ceil(maxVal/2)
       } else {
