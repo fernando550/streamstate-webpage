@@ -18,36 +18,36 @@ class FileUpload extends Component {
     userListLength: '...',
     aggregateListLength: '',
     wrapUp: '',
-    sampling: null,
-    parserType: null
+    sampling: 'reverse',
+    parserType: 'friends',
+    outputFileName: ''
   }
 
   onChange = (e) => {
     e.preventDefault();
-
     if (e.target.id === 'fileUpload') {
       this.setState({fileUpload:e.target.files[0]})
     } else {
       this.setState({userName: e.target.value});
     }
-
-    //elseif tweet or followers input
   }
 
   onChangeSample = async (e) => {
+    e.preventDefault();
     if(e.target.id === 'chrono') {
       this.setState({sampling: 'chrono'})
     } else if (e.target.id === 'random') {
       this.setState({sampling: 'random'})
-    } else {
+    } else if (e.target.id === 'reverse'){
       this.setState({sampling: 'reverse'})
     }
   }
 
   onChangeParser = async (e) => {
+    e.preventDefault();
     if(e.target.id === 'friends') {
       this.setState({parserType: 'friends'})
-    } else {
+    } else if (e.target.id === 'followers') {
       this.setState({parserType: 'followers'})
     }
   }
@@ -74,7 +74,7 @@ class FileUpload extends Component {
   }
 
   outputWorkbook = (data) => {
-    var ws_name = "TwitData";
+    var ws_name = this.state.outputFileName
     var wb = XLSX.utils.book_new();
     var ws = XLSX.utils.json_to_sheet(
       data,
@@ -102,7 +102,7 @@ class FileUpload extends Component {
   }
 
   outputTwitBook = (data) => {
-    var ws_name = "TwitData";
+    var ws_name = this.state.outputFileName
     var wb = XLSX.utils.book_new();
     var ws = XLSX.utils.json_to_sheet(
       data,
@@ -134,7 +134,10 @@ class FileUpload extends Component {
       parseFriend: 'initializing, please wait...',
       userListLength: '...',
       aggregateListLength: '',
-      wrapUp: ''
+      wrapUp: '',
+      sampling: 'reverse',
+      parserType: 'friends',
+      outputFileName: ''
     });
   }
 
@@ -142,7 +145,8 @@ class FileUpload extends Component {
     try{
       this.setState({
         loading: 'tweet-parser',
-        disableButton: true
+        disableButton: true,
+        outputFileName: 'Tweet_Hist_'+ this.state.userName
       });
 
       console.log("initializing tweet-parser...")
@@ -164,7 +168,8 @@ class FileUpload extends Component {
       	complete: async (results) => {
           this.setState({
             loading: 'list-parser',
-            disableButton: true
+            disableButton: true,
+            outputFileName: 'File_Parser'
           });
 
           console.log("initializing file-parser...")
@@ -217,18 +222,23 @@ class FileUpload extends Component {
     try{
       this.setState({
         loading: 'user-parser',
-        disableButton: true
+        disableButton: true,
+        outputFileName: 'User_Parser_' + this.state.userName
       });
 
       let initData;
-
+      let initResponse
       console.log("initializing user-parser...")
       if (this.state.parserType === "friends") {
-        let initResponse = await axios.post('/ttapi/getFriendIDs', {data: this.state.userName});
+        console.log('entered friends parsing for single user parser')
+        initResponse = await axios.post('/ttapi/getFriendIDs', {data: this.state.userName});
         initData = initResponse.data;
+        if (initData.length >0) {console.log("data collected")}
       } else {
-        let initResponse = await axios.post('/ttapi/getFollowerIDs', {data: this.state.userName});
+        console.log('entered followers parsing for single user parser')
+        initResponse = await axios.post('/ttapi/getFollowerIDs', {data: this.state.userName});
         initData = initResponse.data;
+        if (initData.length >0) {console.log("data collected")}
       }
 
       console.log("Number of ", this.state.parserType, " IDs retrieved: ", initData.length)
@@ -315,6 +325,39 @@ class FileUpload extends Component {
     return tweetHist
   }
 
+  getUserNames = async (userids) => {
+    var promiseArray = [];
+    var i = 0;
+
+    do {
+      try {
+        const timer = new Timeout();
+        var start = Date.now();
+        const C = await timer.set(3100)
+          .then(async () => {
+            const A = await axios.post('/ttapi/getUserNames', {data: userids.slice(i,i+100)});
+            const B = A.data.map(user => user.screen_name)
+            var end = Date.now() - start
+            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed users: ", String(i)," - ", String(i+100));
+            return B
+          });
+        promiseArray.push(C);
+      } catch(e) {
+        console.log(e)
+      }
+      i+=100
+    } while (i<userids.length)
+
+    const result = await Promise.all(promiseArray);
+    const usernames = [];
+    result.forEach(array =>
+      array.forEach(user =>
+        usernames.push(user)
+      )
+    );
+    return usernames
+  }
+
   findFollowerIDs = async (usernames) => {
     var promiseArray = []
     var i=0
@@ -325,8 +368,11 @@ class FileUpload extends Component {
 
     if (this.state.userListLength <= 500) {
       limit = this.state.userListLength
+      for (var j=0;j<limit;j++) {
+        listArray.push(j)
+      }
     } else {
-      listLength = this.state.userListLength
+      listLength = this.state.userListLength-1
       limit = 500
       this.setState({userListLength: limit})
       console.log("sampling method selected: ", this.state.sampling)
@@ -361,7 +407,7 @@ class FileUpload extends Component {
             const A = await axios.post('/ttapi/getFollowerIDs', {data: usernames[listArray[i]]});
             this.setState({parseFriend: "processing user " + String(i+1) + " out of " + this.state.userListLength + " ..."})
             var end = Date.now() - start
-            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed user: ", String(i), " name: ", usernames[listArray[i]]);
+            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed user: ", String(i+1), " name: ", usernames[listArray[i]]);
             return A.data
           });
           promiseArray.push(B);
@@ -382,39 +428,6 @@ class FileUpload extends Component {
     return userids
   }
 
-  getUserNames = async (userids) => {
-    var promiseArray = [];
-    var i = 0;
-
-    do {
-      try {
-        const timer = new Timeout();
-        var start = Date.now();
-        const C = await timer.set(3100)
-          .then(async () => {
-            const A = await axios.post('/ttapi/getUserNames', {data: userids.slice(i,i+100)});
-            const B = A.data.map(user => user.screen_name)
-            var end = Date.now() - start
-            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed users: ", String(i)," - ", String(i+100));
-            return B
-          });
-        promiseArray.push(C);
-      } catch(e) {
-        console.log(e)
-      }
-      i+=100
-    } while (i<userids.length)
-
-    const result = await Promise.all(promiseArray);
-    const usernames = [];
-    result.forEach(array =>
-      array.forEach(user =>
-        usernames.push(user)
-      )
-    );
-    return usernames
-  }
-
   findFriendIDs = async (usernames) => {
     var promiseArray = []
     var i=0
@@ -425,6 +438,9 @@ class FileUpload extends Component {
 
     if (this.state.userListLength <= 500) {
       limit = this.state.userListLength
+      for (var j=0;j<limit;j++) {
+        listArray.push(j)
+      }
     } else {
       listLength = this.state.userListLength
       limit = 500
@@ -461,7 +477,7 @@ class FileUpload extends Component {
             const A = await axios.post('/ttapi/getUserIDs', {data: usernames[listArray[i]]});
             this.setState({parseFriend: "processing user " + String(i+1) + " out of " + this.state.userListLength + " ..."})
             var end = Date.now() - start
-            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed user: ", String(i), " name: ", usernames[listArray[i]]);
+            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed user: ", String(i+1), " name: ", usernames[listArray[i]]);
             return A.data
           });
           promiseArray.push(B);
@@ -494,6 +510,8 @@ class FileUpload extends Component {
       })
     });
 
+    console.log(outputCount)
+
     var keys = Object.keys(outputCount)
     var percentile = Math.floor(keys.length*0.95)
     console.log("95th percentile index: ", percentile)
@@ -506,8 +524,13 @@ class FileUpload extends Component {
     console.log("95th percentile value: ", criteria)
 
     if ((criteria/this.state.userListLength) < 0.05) {
-      criteria = Math.floor(0.05*this.state.userListLength)
-      console.log("NOTICE: USING NEW CRITERIA VALUE OF: ", criteria)
+      var maxVal = Math.max(...sortValues))
+      if (Math.floor(0.05*this.state.userListLength) > maxVal) {
+        criteria = Math.ceil(maxVal/2)
+      } else {
+        criteria = Math.floor(0.05*this.state.userListLength)
+        console.log("NOTICE: USING NEW CRITERIA VALUE OF: ", criteria)
+      }
     }
 
     const newObj = {}
@@ -567,10 +590,6 @@ class FileUpload extends Component {
     usernames.forEach(obj => {
       const objID = String(obj.USER_ID)
       obj.MUTUAL_COUNT = userCount[objID];
-      // obj.MUTUAL_PERCENT_COUNT = Math.round((outputCount[objID]/outputUsers.length)*100)/100
-      // console.log(outputCount[objID])
-      // console.log(outputUsers.length)
-      // console.log(Math.round((outputCount[objID]/outputUsers.length)*100)/100)
     });
 
     return usernames
@@ -579,9 +598,53 @@ class FileUpload extends Component {
   render() {
     return (
       <div class="dashboard-child-component">
-
         <div class="row z-depth-5 fileupload-func-panel">
-          <h6 class="bold">SAMPLING OPTIONS (this does not apply to tweet feed function)</h6>
+          <h6 class="bold">USER TWEET HISTORY</h6>
+          <form id="tweetForm" onSubmit={this.handleSubmit}>
+            <div class="input-field col s12">
+              <input id="userName" type="text" class="validate" onChange={this.onChange}/>
+              <label for="userName">Username</label>
+            </div>
+            <button
+              class={"btn " + (this.state.disableButton ? 'disabled' : 'grey darken-2 waves-effect waves-light')}
+              type="submit"
+              name="action">
+              Process
+            </button>
+            <div
+              class="preloader-wrapper small active"
+              style={{
+              top: '10px',
+              marginLeft: '5px',
+              display: (this.state.loading === "tweet-parser" ? 'inline-block' : 'none')
+            }}>
+              <div class="spinner-layer spinner-blue-only">
+                <div class="circle-clipper left">
+                  <div class="circle"></div>
+                </div><div class="gap-patch">
+                  <div class="circle"></div>
+                </div><div class="circle-clipper right">
+                  <div class="circle"></div>
+                </div>
+              </div>
+            </div>
+          </form>
+          <br/>
+          <div
+            class=""
+            style={{
+            marginTop: '10px',
+            display: (this.state.loading === "tweet-parser" ? 'block' : 'none')
+          }}>
+            <p>user input: {this.state.userName}</p>
+            <p>{this.state.parseFriend}</p>
+          </div>
+        </div>
+        <br/>
+        <br/>
+        <h6 style={{color: 'black', fontWeight: '900'}}>OPTIONS</h6>
+        <div class="row z-depth-5 fileupload-func-panel">
+          <h6 class="bold">SAMPLING TYPE</h6>
               <form onChange={this.onChangeSample}>
               <label style={{marginRight:'5px'}}>
                 <input id="reverse" name="group1" type="radio" checked/>
@@ -596,28 +659,25 @@ class FileUpload extends Component {
                 <span>Randomized</span>
               </label>
           </form>
+
+          <br/>
+
+            <h6 class="bold">GROUP TYPE</h6>
+                <form onChange={this.onChangeParser}>
+                <label style={{marginRight:'5px'}}>
+                  <input id="friends" name="group1" type="radio" checked />
+                  <span>Friends</span>
+                </label>
+                <label style={{marginRight:'5px'}}>
+                  <input id="followers" name="group1" type="radio" />
+                  <span>Followers</span>
+                </label>
+            </form>
+
         </div>
-
-        <br/>
-
+        <h6 style={{color: 'black', fontWeight: '900'}}>FUNCTIONS</h6>
         <div class="row z-depth-5 fileupload-func-panel">
-          <h6 class="bold">PARSING OPTIONS (this does not apply to tweet feed function)</h6>
-              <form onChange={this.onChangeParser}>
-              <label style={{marginRight:'5px'}}>
-                <input id="friends" name="group1" type="radio" checked />
-                <span>Friends</span>
-              </label>
-              <label style={{marginRight:'5px'}}>
-                <input id="followers" name="group1" type="radio" />
-                <span>Followers</span>
-              </label>
-          </form>
-        </div>
-
-        <br/>
-
-        <div class="row z-depth-5 fileupload-func-panel">
-          <h6 class="bold">LIST PARSER</h6>
+          <h6 class="bold">FILE UPLOAD</h6>
 
           <form id="fileForm" onSubmit={this.handleSubmit}>
 
@@ -671,11 +731,9 @@ class FileUpload extends Component {
             <p>{this.state.wrapUp}</p>
           </div>
         </div>
-
         <br/>
-
         <div class="row z-depth-5 fileupload-func-panel">
-          <h6 class="bold">SINGLE USER PARSER</h6>
+          <h6 class="bold">SINGLE USER INPUT</h6>
           <form id="userForm" onSubmit={this.handleSubmit}>
             <div class="input-field col s12">
               <input id="userName" type="text" class="validate" onChange={this.onChange}/>
@@ -720,55 +778,6 @@ class FileUpload extends Component {
             <p>{this.state.wrapUp}</p>
           </div>
         </div>
-
-        <br/>
-
-        <div class="row z-depth-5 fileupload-func-panel">
-          <h6 class="bold">USER TWEET HISTORY PARSER</h6>
-          <form id="tweetForm" onSubmit={this.handleSubmit}>
-            <div class="input-field col s12">
-              <input id="userName" type="text" class="validate" onChange={this.onChange}/>
-              <label for="userName">Username</label>
-            </div>
-
-            <button
-              class={"btn " + (this.state.disableButton ? 'disabled' : 'grey darken-2 waves-effect waves-light')}
-              type="submit"
-              name="action">
-              Process
-            </button>
-
-            <div
-              class="preloader-wrapper small active"
-              style={{
-              top: '10px',
-              marginLeft: '5px',
-              display: (this.state.loading === "tweet-parser" ? 'inline-block' : 'none')
-            }}>
-              <div class="spinner-layer spinner-blue-only">
-                <div class="circle-clipper left">
-                  <div class="circle"></div>
-                </div><div class="gap-patch">
-                  <div class="circle"></div>
-                </div><div class="circle-clipper right">
-                  <div class="circle"></div>
-                </div>
-              </div>
-            </div>
-          </form>
-          <br/>
-          <div
-            class=""
-            style={{
-            marginTop: '10px',
-            display: (this.state.loading === "tweet-parser" ? 'block' : 'none')
-          }}>
-            <p>user input: {this.state.userName}</p>
-            <p>{this.state.parseFriend}</p>
-          </div>
-        </div>
-
-
       </div>
     );
   }
