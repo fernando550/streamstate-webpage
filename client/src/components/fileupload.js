@@ -150,7 +150,7 @@ class FileUpload extends Component {
       });
 
       console.log("initializing tweet-parser...")
-      let results = await this.getTweets(this.state.userName);
+      let results = await this.getUserTweets(this.state.userName);
       console.log("Number of tweets found: ", results.length)
 
       console.log("Finishing up...")
@@ -189,10 +189,10 @@ class FileUpload extends Component {
 
           if (this.state.parserType === "friends") {
             console.log("Retrieving friend IDs for input list of users ...")
-            userids = await this.findFriendIDs(usernames)
+            userids = await this.getFriendIDs(usernames)
           } else {
             console.log("Retrieving follower IDs for input list of users ...")
-            userids = await this.findFollowerIDs(usernames)
+            userids = await this.getFollowerIDs(usernames)
           }
 
           console.log("aggregating list of mutual ", this.state.parserType, " by IDs");
@@ -252,10 +252,10 @@ class FileUpload extends Component {
 
       if (this.state.parserType === "friends") {
         console.log("Retrieving friend IDs for input list of users ...")
-        userids = await this.findFriendIDs(usernames)
+        userids = await this.getFriendIDs(usernames)
       } else {
         console.log("Retrieving follower IDs for input list of users ...")
-        userids = await this.findFollowerIDs(usernames)
+        userids = await this.getFollowerIDs(usernames)
       }
 
       console.log("aggregating list of mutual ", this.state.parserType, " by IDs");
@@ -278,7 +278,7 @@ class FileUpload extends Component {
     }
   }
 
-  getTweets = async (username) => {
+  getUserTweets = async (username) => {
     var promiseArray = [];
     var i = 1;
     var defaultParams =  {screen_name: this.state.userName, tweet_mode: 'extended', count: 200, include_rts: 'true'}
@@ -358,7 +358,7 @@ class FileUpload extends Component {
     return usernames
   }
 
-  findFollowerIDs = async (usernames) => {
+  getFollowerIDs = async (usernames) => {
     var promiseArray = []
     var i=0
     var limit = 0;
@@ -428,7 +428,7 @@ class FileUpload extends Component {
     return userids
   }
 
-  findFriendIDs = async (usernames) => {
+  getFriendIDs = async (usernames) => {
     var promiseArray = []
     var i=0
     var limit = 0;
@@ -474,7 +474,7 @@ class FileUpload extends Component {
         var start = Date.now();
         const B = await timer.set(61000)
           .then(async () => {
-            const A = await axios.post('/ttapi/getUserIDs', {data: usernames[listArray[i]]});
+            const A = await axios.post('/ttapi/getFriendIDs', {data: usernames[listArray[i]]});
             this.setState({parseFriend: "processing user " + String(i+1) + " out of " + this.state.userListLength + " ..."})
             var end = Date.now() - start
             console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed user: ", String(i+1), " name: ", usernames[listArray[i]]);
@@ -647,7 +647,7 @@ class FileUpload extends Component {
           <h6 class="bold">SAMPLING TYPE</h6>
               <form onChange={this.onChangeSample}>
               <label style={{marginRight:'5px'}}>
-                <input id="reverse" name="group1" type="radio" checked/>
+                <input id="reverse" name="group1" type="radio" defaultChecked />
                 <span>Reverse Chrono (default)</span>
               </label>
               <label style={{marginRight:'5px'}}>
@@ -665,7 +665,7 @@ class FileUpload extends Component {
             <h6 class="bold">GROUP TYPE</h6>
                 <form onChange={this.onChangeParser}>
                 <label style={{marginRight:'5px'}}>
-                  <input id="friends" name="group1" type="radio" checked />
+                  <input id="friends" name="group1" type="radio" defaultChecked />
                   <span>Friends</span>
                 </label>
                 <label style={{marginRight:'5px'}}>
