@@ -90,7 +90,7 @@ class ttApp extends Component {
             </div>
           </div>
         }
-        {!this.state.confirmation &&
+        {this.state.confirmation &&
           <Dashboard/>
         }
       </div>
