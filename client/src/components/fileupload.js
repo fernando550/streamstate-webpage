@@ -524,9 +524,11 @@ class FileUpload extends Component {
     console.log("95th percentile value: ", criteria)
 
     if ((criteria/this.state.userListLength) < 0.05) {
+      console.log("criteria value is less than 5%, adjusting . . .")
       var maxVal = Math.max(...sortValues)
       if (Math.floor(0.05*this.state.userListLength) > maxVal) {
         criteria = Math.ceil(maxVal/2)
+        console.log("NOTICE: USING NEW CRITERIA VALUE OF: ", criteria)
       } else {
         criteria = Math.floor(0.05*this.state.userListLength)
         console.log("NOTICE: USING NEW CRITERIA VALUE OF: ", criteria)
@@ -535,8 +537,12 @@ class FileUpload extends Component {
 
     const newObj = {}
     keys.filter((key) => outputCount[key] >= criteria).forEach((key) => {
+      if (newObj.length < 1000) {
       var val = outputCount[key]
       newObj[key] = val
+    } else {
+      return;
+    }
     })
     console.log("newobj length: ", Object.keys(newObj).length)
 
