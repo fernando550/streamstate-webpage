@@ -485,7 +485,7 @@ class FileUpload extends Component {
         console.log(e)
       }
       i+=1
-    } while (i<limit) //userNamesList1.length)
+    } while (i<2) //userNamesList1.length)
 
     const result = await Promise.all(promiseArray);
     const userids = [];
@@ -537,7 +537,8 @@ class FileUpload extends Component {
 
     const newObj = {}
     keys.filter((key) => outputCount[key] >= criteria).forEach((key) => {
-      if (newObj.length < 1000) {
+      // newObj[key] = outputCount[key]
+      if (Object.keys(newObj).length < 1000) {
         var val = outputCount[key]
         newObj[key] = val
       } else {
