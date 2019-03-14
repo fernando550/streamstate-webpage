@@ -113,8 +113,14 @@ class FileUpload extends Component {
           "CREATED_AT",
           "ID",
           "TEXT",
-          "RETWEET_COUNT",
-          "FAVORITE_COUNT"
+          "REPLY TO STATUS",
+          "RETWEET?",
+          "RETWEET_COUNT"
+          "FAVORITE_COUNT",
+          "REPLY_COUNT",
+          "URL",
+          "RETWEETED...?",
+          "FAVORITED...?"
         ]
       }
     );
@@ -292,11 +298,17 @@ class FileUpload extends Component {
             const A = await axios.post('/ttapi/getUserTweets', defaultParams);
             const B = A.data.map(tweet => {
               const tweetObj = {
-                "CREATED_AT": tweet.create_at,
+                "CREATED_AT": tweet.created_at,
                 "ID": tweet.id,
                 "TEXT": tweet.full_text,
+                "REPLY TO STATUS": tweet.in_reply_to_status_id,
+                "RETWEET?": tweet.retweeted_status,
                 "RETWEET_COUNT": tweet.retweet_count,
-                "FAVORITE_COUNT": tweet.favorite_count
+                "FAVORITE_COUNT": tweet.favorite_count,
+                "REPLY_COUNT": tweet.reply_count,
+                "URL": tweet.quoted_status_permalink.url,
+                "RETWEETED...?": tweet.retweeted,
+                "FAVORITED...?": tweet.favorited
               }
               return tweetObj
             });
@@ -512,36 +524,58 @@ class FileUpload extends Component {
 
     console.log(outputCount)
 
-    var keys = Object.keys(outputCount)
-    var percentile = Math.floor(keys.length*0.95)
-    console.log("95th percentile index: ", percentile)
+    // var keys = Object.keys(outputCount)
+    // var percentile = Math.floor(keys.length*0.95)
+    // console.log("95th percentile index: ", percentile)
+    //
+    // var values = Object.values(outputCount)
+    // var sortValues = values.sort((a, b) => a - b)
+    // console.log("sorted values: ", sortValues.length)
+    //
+    // var criteria = sortValues[percentile-1]
+    // console.log("95th percentile value: ", criteria)
+    //
+    // if ((criteria/this.state.userListLength) < 0.05) {
+    //   console.log("criteria value is less than 5%, adjusting . . .")
+    //   var maxVal = sortValues[sortValues.length-1]
+    //   if (Math.floor(0.05*this.state.userListLength) > maxVal) {
+    //     criteria = Math.ceil(maxVal/2)
+    //     console.log("NOTICE: USING NEW CRITERIA VALUE OF: ", criteria)
+    //   } else {
+    //     criteria = Math.floor(0.05*this.state.userListLength)
+    //     console.log("NOTICE: USING NEW CRITERIA VALUE OF: ", criteria)
+    //   }
+    // }
 
-    var values = Object.values(outputCount)
-    var sortValues = values.sort((a, b) => a - b)
-    console.log("sorted values: ", sortValues.length)
+    var arr = [];
 
-    var criteria = sortValues[percentile-1]
-    console.log("95th percentile value: ", criteria)
-
-    if ((criteria/this.state.userListLength) < 0.05) {
-      console.log("criteria value is less than 5%, adjusting . . .")
-      var maxVal = sortValues[sortValues.length-1]
-      if (Math.floor(0.05*this.state.userListLength) > maxVal) {
-        criteria = Math.ceil(maxVal/2)
-        console.log("NOTICE: USING NEW CRITERIA VALUE OF: ", criteria)
-      } else {
-        criteria = Math.floor(0.05*this.state.userListLength)
-        console.log("NOTICE: USING NEW CRITERIA VALUE OF: ", criteria)
+    for (var key in outputCount) {
+      if (outputCount.hasOwnProperty(key)) {
+        arr.push([key, outputCount[key]]);
       }
     }
+    console.log(arr)
+
+    arr = arr.sort(function(a, b) {
+      return a[1]-b[1]; // compare numbers
+    });
+
+    console.log(arr)
 
     const newObj = {}
-    keys.filter((key) => outputCount[key] >= criteria).forEach((key) => {
-      // newObj[key] = outputCount[key]
-      if (Object.keys(newObj).length <= 1000) {
-          newObj[key] = outputCount[key]
-      }
-    })
+    for (var i =  arr.length-1001; i < arr.length; i++) {
+        var key = sortedArray[i][0];
+        var value = sortedArray[i][1];
+        newObj[key] = value;
+    }
+
+    // const newObj = {}
+    // keys.filter((key) => outputCount[key] >= criteria).forEach((key) => {
+    //   // newObj[key] = outputCount[key]
+    //   if (Object.keys(newObj).length <= 1000) {
+    //       newObj[key] = outputCount[key]
+    //   }
+    // })
     console.log("newobj length: ", Object.keys(newObj).length)
 
     const outputUsers = Object.keys(newObj);
