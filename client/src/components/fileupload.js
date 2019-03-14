@@ -556,7 +556,7 @@ class FileUpload extends Component {
     }
     console.log(arr)
 
-    arr = arr.sort(function(a, b) {
+    sortedArray = arr.sort(function(a, b) {
       return a[1]-b[1]; // compare numbers
     });
 
