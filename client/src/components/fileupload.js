@@ -115,7 +115,7 @@ class FileUpload extends Component {
           "TEXT",
           "REPLY TO STATUS",
           "RETWEET?",
-          "RETWEET_COUNT"
+          "RETWEET_COUNT",
           "FAVORITE_COUNT",
           "REPLY_COUNT",
           "URL",
