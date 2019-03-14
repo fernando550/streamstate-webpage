@@ -113,14 +113,16 @@ class FileUpload extends Component {
           "CREATED_AT",
           "ID",
           "TEXT",
-          "REPLY TO STATUS",
-          "RETWEET?",
+          "IS REPLY?",
+          "IS RETWEET?",
+          "IS QUOTE TWEET?",
+          "REPLY_COUNT",
           "RETWEET_COUNT",
           "FAVORITE_COUNT",
-          "REPLY_COUNT",
           "URL",
           "RETWEETED...?",
-          "FAVORITED...?"
+          "FAVORITED...?",
+          "SOURCE"
         ]
       }
     );
@@ -307,10 +309,10 @@ class FileUpload extends Component {
                 "TEXT": tweet.full_text,
                 "IS REPLY?": tweet.in_reply_to_status_id,
                 "IS RETWEET?": tweet.retweeted_status,
-                "IS QUOTE TWEET?": tweet.quote_status_id
+                "IS QUOTE TWEET?": tweet.quote_status_id,
+                "REPLY_COUNT": tweet.reply_count,
                 "RETWEET_COUNT": tweet.retweet_count,
                 "FAVORITE_COUNT": tweet.favorite_count,
-                "REPLY_COUNT": tweet.reply_count,
                 "URL": url,
                 "RETWEETED...?": tweet.retweeted,
                 "FAVORITED...?": tweet.favorited,
