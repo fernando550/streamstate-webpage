@@ -116,10 +116,11 @@ class FileUpload extends Component {
           "IS REPLY?",
           "IS RETWEET?",
           "IS QUOTE TWEET?",
-          "REPLY_COUNT",
-          "RETWEET_COUNT",
-          "FAVORITE_COUNT",
-          "URL",
+          "REPLY COUNT",
+          "RETWEET COUNT",
+          "FAVORITE COUNT",
+          "TWEET URL",
+          "QUOTE TWEET URL",
           "RETWEETED...?",
           "FAVORITED...?",
           "SOURCE"
@@ -304,19 +305,20 @@ class FileUpload extends Component {
                 const url = null;
               }
               const tweetObj = {
-                "CREATED_AT": tweet.created_at,
-                "ID": tweet.id,
+                "CREATED_AT": tweet.created_at.substring(0,10),
+                "ID": tweet.id_str,
                 "TEXT": tweet.full_text,
-                "IS REPLY?": tweet.in_reply_to_status_id,
-                "IS RETWEET?": tweet.retweeted_status,
-                "IS QUOTE TWEET?": tweet.quote_status_id,
-                "REPLY_COUNT": tweet.reply_count,
-                "RETWEET_COUNT": tweet.retweet_count,
-                "FAVORITE_COUNT": tweet.favorite_count,
-                "URL": url,
+                "IS REPLY?": (tweet.in_reply_to_status_id ? tweet.in_reply_to_status_id : false),
+                "IS RETWEET?": (tweet.retweeted_status ? tweet.retweeted_status : false),
+                "IS QUOTE TWEET?": (tweet.quote_status_id ? tweet.quote_status_id : false),
+                "REPLY COUNT": tweet.reply_count,
+                "RETWEET COUNT": tweet.retweet_count,
+                "FAVORITE COUNT": tweet.favorite_count,
+                "TWEET URL": tweet.full_text.substring(tweet.full_text.indexOf("https")),
+                "QUOTE TWEET URL": (tweet.quoted_status_permalink ? tweet.quoted_status_permalink.url : 'NONE'),
                 "RETWEETED...?": tweet.retweeted,
                 "FAVORITED...?": tweet.favorited,
-                "SOURCE": tweet.source
+                "SOURCE": tweet.source.substring(tweet.source.indexOf(">")+1,tweet.source.lastIndexOf("<"))
               }
               return tweetObj
             });
