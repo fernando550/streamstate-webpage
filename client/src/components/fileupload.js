@@ -297,18 +297,24 @@ class FileUpload extends Component {
           .then(async () => {
             const A = await axios.post('/ttapi/getUserTweets', defaultParams);
             const B = A.data.map(tweet => {
+              const url = tweet.quoted_status_permalink
+              if (url==undefined) {
+                const url = null;
+              }
               const tweetObj = {
                 "CREATED_AT": tweet.created_at,
                 "ID": tweet.id,
                 "TEXT": tweet.full_text,
-                "REPLY TO STATUS": tweet.in_reply_to_status_id,
-                "RETWEET?": tweet.retweeted_status,
+                "IS REPLY?": tweet.in_reply_to_status_id,
+                "IS RETWEET?": tweet.retweeted_status,
+                "IS QUOTE TWEET?": tweet.quote_status_id
                 "RETWEET_COUNT": tweet.retweet_count,
                 "FAVORITE_COUNT": tweet.favorite_count,
                 "REPLY_COUNT": tweet.reply_count,
-                "URL": tweet.quoted_status_permalink.url,
+                "URL": url,
                 "RETWEETED...?": tweet.retweeted,
-                "FAVORITED...?": tweet.favorited
+                "FAVORITED...?": tweet.favorited,
+                "SOURCE": tweet.source
               }
               return tweetObj
             });
