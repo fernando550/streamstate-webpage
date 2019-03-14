@@ -556,7 +556,7 @@ class FileUpload extends Component {
     }
     console.log(arr)
 
-    sortedArray = arr.sort(function(a, b) {
+    arr = arr.sort(function(a, b) {
       return a[1]-b[1]; // compare numbers
     });
 
@@ -564,8 +564,8 @@ class FileUpload extends Component {
 
     const newObj = {}
     for (var i =  arr.length-1001; i < arr.length; i++) {
-        var key = sortedArray[i][0];
-        var value = sortedArray[i][1];
+        var key = arr[i][0];
+        var value = arr[i][1];
         newObj[key] = value;
     }
 
