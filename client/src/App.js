@@ -6,7 +6,7 @@ import parallaxIMG from './images/white-pattern-abstract.jpg';
 import Header from "./layout/header";
 import Footer from "./layout/footer";
 
-import Home from "./components/home";
+import Home from "./components/init_";
 import About from "./components/about";
 import Contact from "./components/contact";
 import Location from "./components/location";

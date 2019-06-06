@@ -121,8 +121,6 @@ class FileUpload extends Component {
           "FAVORITE COUNT",
           "TWEET URL",
           "QUOTE TWEET URL",
-          "RETWEETED...?",
-          "FAVORITED...?",
           "SOURCE"
         ]
       }
@@ -314,10 +312,8 @@ class FileUpload extends Component {
                 "REPLY COUNT": tweet.reply_count,
                 "RETWEET COUNT": tweet.retweet_count,
                 "FAVORITE COUNT": tweet.favorite_count,
-                "TWEET URL": tweet.full_text.substring(tweet.full_text.indexOf("https")),
+                "TWEET URL": (entities.urls[0] ? entities.urls[0].url : false),
                 "QUOTE TWEET URL": (tweet.quoted_status_permalink ? tweet.quoted_status_permalink.url : 'NONE'),
-                "RETWEETED...?": tweet.retweeted,
-                "FAVORITED...?": tweet.favorited,
                 "SOURCE": tweet.source.substring(tweet.source.indexOf(">")+1,tweet.source.lastIndexOf("<"))
               }
               return tweetObj
@@ -335,7 +331,7 @@ class FileUpload extends Component {
         console.log(e)
       }
       i+=200
-    } while (i<3200)
+    } while (i<1000)
 
     const result = await Promise.all(promiseArray);
     const tweetHist = [];

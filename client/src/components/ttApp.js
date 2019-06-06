@@ -40,7 +40,7 @@ class ttApp extends Component {
     return (
       <div>
 
-        {!this.state.confirmation &&
+        {this.state.confirmation &&
           <div>
             <div id="login-warning" class="red" style={{display: (this.state.error ? 'block' : 'none')}}>
               Invalid username or password, please try again
@@ -90,7 +90,7 @@ class ttApp extends Component {
             </div>
           </div>
         }
-        {this.state.confirmation &&
+        {!this.state.confirmation &&
           <Dashboard/>
         }
       </div>
