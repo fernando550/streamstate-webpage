@@ -307,7 +307,7 @@ class FileUpload extends Component {
                 "ID": tweet.id_str,
                 "TEXT": tweet.full_text,
                 "IS REPLY?": (tweet.in_reply_to_status_id ? tweet.in_reply_to_status_id : false),
-                "IS RETWEET?": (tweet.retweeted_status ? TRUE : false),
+                "IS RETWEET?": (tweet.retweeted_status ? true : false),
                 "IS QUOTE TWEET?": (tweet.quoted_status_id ? tweet.quoted_status_id : false),
                 "QUOTE COUNT": tweet.quote_count,
                 "RETWEET COUNT": tweet.retweet_count,
