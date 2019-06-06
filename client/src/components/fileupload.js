@@ -116,7 +116,7 @@ class FileUpload extends Component {
           "IS REPLY?",
           "IS RETWEET?",
           "IS QUOTE TWEET?",
-          "REPLY COUNT",
+          "QUOTE COUNT",
           "RETWEET COUNT",
           "FAVORITE COUNT",
           "TWEET URL",
@@ -307,12 +307,12 @@ class FileUpload extends Component {
                 "ID": tweet.id_str,
                 "TEXT": tweet.full_text,
                 "IS REPLY?": (tweet.in_reply_to_status_id ? tweet.in_reply_to_status_id : false),
-                "IS RETWEET?": (tweet.retweeted_status ? tweet.retweeted_status : false),
-                "IS QUOTE TWEET?": (tweet.quote_status_id ? tweet.quote_status_id : false),
-                "REPLY COUNT": tweet.reply_count,
+                "IS RETWEET?": (tweet.retweeted_status ? TRUE : false),
+                "IS QUOTE TWEET?": (tweet.quoted_status_id ? tweet.quoted_status_id : false),
+                "QUOTE COUNT": tweet.quote_count,
                 "RETWEET COUNT": tweet.retweet_count,
                 "FAVORITE COUNT": tweet.favorite_count,
-                "TWEET URL": (entities.urls[0] ? entities.urls[0].url : false),
+                "TWEET URL": (tweet.entities.urls[0] ? tweet.entities.urls[0].url : false),
                 "QUOTE TWEET URL": (tweet.quoted_status_permalink ? tweet.quoted_status_permalink.url : 'NONE'),
                 "SOURCE": tweet.source.substring(tweet.source.indexOf(">")+1,tweet.source.lastIndexOf("<"))
               }
@@ -331,7 +331,7 @@ class FileUpload extends Component {
         console.log(e)
       }
       i+=200
-    } while (i<1000)
+    } while (i<3200)
 
     const result = await Promise.all(promiseArray);
     const tweetHist = [];
