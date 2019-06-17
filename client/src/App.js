@@ -10,7 +10,7 @@ import Home from "./components/init_";
 import About from "./components/about";
 import Contact from "./components/contact";
 import Location from "./components/location";
-import ttApp from './components/ttApp';
+import TwitterTool from './components/twittertool/init_tt';
 
 class App extends Component {
   render() {
@@ -24,7 +24,7 @@ class App extends Component {
             <Route path="/about" component={About} />
             <Route path="/contact" component={Contact} />
             <Route path="/location" component={Location} />
-            <Route path="/twitter-tool-login" component={ttApp} />
+            <Route path="/twitter-tool-login" component={TwitterTool} />
           </div>
           <Footer/>
         </div>

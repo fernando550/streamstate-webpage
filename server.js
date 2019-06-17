@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 // LOGIN REQUEST
 app.post('/ttapi/login', async (req, res) => {
   console.log('client login request: ', req.body);
-  if (req.body.userName == process.env.login_name && req.body.passWord == process.env.login_password) {
+  if (req.body.username == process.env.login_name && req.body.password == process.env.login_password) {
     console.log('client login successful');
     res.send({confirmation: true, error: false});
   }
