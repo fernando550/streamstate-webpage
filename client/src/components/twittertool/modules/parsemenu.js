@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 class ParseMenu extends Component {
   render () {
     return (
-      <div class="row z-depth-5 fileupload-func-panel">
+      <div id="parse-menu" class="row z-depth-5">
         <h6 class="bold">SAMPLING TYPE</h6>
         <form onChange={this.props.changeSampling}>
           <label style={{marginRight:'5px'}}>

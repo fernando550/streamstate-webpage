@@ -803,9 +803,19 @@ class Functions extends Component {
           (item.id==='tweetView' && item.view===true)
           ? <TweetHist key={i} {...this.state} handleSubmit={this.onSubmit} handleChange={this.onChange}/>
           : (item.id==="fileView" && item.view===true)
-          ? <FileParser key={i} {...this.state} handleSubmit={this.onSubmit} handleChange={this.onChange}/>
+          ? [
+            <h6 style={{color: 'black', fontWeight: '900'}}>OPTIONS</h6>,
+            <ParseMenu changeSampling={this.onChangeSample} changeParser={this.onChangeParser}/>,
+            <br/>,
+            <FileParser key={i} {...this.state} handleSubmit={this.onSubmit} handleChange={this.onChange}/>
+          ]
           : (item.id==="userView" && item.view===true)
-          ? <UserParser key={i} {...this.state} handleSubmit={this.onSubmit} handleChange={this.onChange}/>
+          ? [
+            <h6 style={{color: 'black', fontWeight: '900'}}>OPTIONS</h6>,
+            <ParseMenu changeSampling={this.onChangeSample} changeParser={this.onChangeParser}/>,
+            <br/>,
+            <UserParser key={i} {...this.state} handleSubmit={this.onSubmit} handleChange={this.onChange}/>
+          ]
           : (item.id==="helpView" && item.view===true)
           ? <Help key={i}/>
           : <a key={i}></a>

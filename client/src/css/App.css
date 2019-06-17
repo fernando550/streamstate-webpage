@@ -129,6 +129,12 @@ button {
   min-height: 350px;
   border-radius: 5px;
 }
+#parse-menu {
+    background-color: white;
+    padding: 1%;
+    min-height: 200px;
+    border-radius: 5px;
+}
 
 /*  MEDIA ___________________________________________________________________*/
 @media only screen and (max-width: 600px) {
