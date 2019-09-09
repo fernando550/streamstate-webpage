@@ -5,10 +5,10 @@ import Help from './help';
 class MenuButton extends Component {
   render() {
     const style = {
-      width: '20%'
+      // width: '10%'
     }
     return (
-      <div class="col s5 dash-menu-item" style={style}>
+      <div class="col s2 dash-menu-item" style={style}>
         <a
           id={this.props.id}
           class="waves-effect waves-light"
@@ -25,27 +25,32 @@ class Dashboard extends Component {
     menuItems: [
       {
         id: 'tweetView',
-        text: 'TWEET-HISTORY',
+        text: 'Tweet History',
         view: true
       },
       {
         id: 'fileView',
-        text: 'FILE-PARSER',
+        text: 'Sphere of Influence (SOI)',
         view: false
       },
       {
         id: 'userView',
-        text: 'USER-PARSER',
+        text: 'SOI (Single User)',
+        view: false
+      },
+      {
+        id: 'userList',
+        text: 'User List Data',
         view: false
       },
       {
         id: 'helpView',
-        text: 'HELP',
+        text: 'Help',
         view: false
       },
       {
         id: 'signOut',
-        text: 'SIGN OUT',
+        text: 'Sign Out',
         view: false
       }
     ]
@@ -71,7 +76,7 @@ class Dashboard extends Component {
         <div class="row">
           {this.state.menuItems.map((item, i) => <MenuButton key={i} id={item.id} text={item.text} handleClick={this.onClick}/>)}
         </div>
-        <div class="row">
+        <div class="row" style={{width: '80%'}}>
           <Functions view={this.state.menuItems}/>
         </div>
       </div>

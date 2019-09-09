@@ -4,18 +4,38 @@ import Papa from 'papaparse';
 import XLSX from 'xlsx';
 import ProgressBar from './modules/progressbar';
 import ParseMenu from './modules/parsemenu';
+import ParseMenu1 from './modules/parsemenu1';
 import Help from './help';
 const Timeout = require('await-timeout');
+
+
+// need to write a user data function that will ouput user data in a table
+// need to write a function that will take a file upload and provide user data
+
+class Description extends Component {
+  render() {
+    return (
+      <div class="row z-depth-5" style={{
+        backgroundColor: 'white',
+        padding: '1%',
+        minHeight: '100%',
+        borderRadius: '5px',
+      }}>
+        {this.props.text}
+      </div>
+    )
+  }
+}
 
 class TweetHist extends Component {
   render() {
     return (
-      <div class="row z-depth-5 fileupload-func-panel">
-        <h6 class="bold">TWEET-HISTORY (Single user input)</h6>
+      <div class="row z-depth-5 fileupload-func-panel" style={{margin: '0 auto'}}>
+        <h6 class="bold">USER-PARSER</h6>
         <form id="tweetForm" onSubmit={this.props.handleSubmit}>
           <div class="input-field col s12">
             <input id="userName" type="text" class="validate" onChange={this.props.handleChange}/>
-            <label for="userName">Username</label>
+            <label for="userName">Enter a user handle (do not include the '@' symbol)</label>
           </div>
           <button
             class={"btn " + (this.props.disableButton ? 'disabled' : 'grey darken-2 waves-effect waves-light')}
@@ -45,8 +65,50 @@ class FileParser extends Component{
   render() {
     return (
       <div class="row z-depth-5 fileupload-func-panel">
-        <h6 class="bold">FILE-PARSER (Please upload a file)</h6>
+        <h6 class="bold">FILE-PARSER</h6>
         <form id="fileForm" onSubmit={this.props.handleSubmit}>
+          <div class="file-field input-field">
+            <div class={"btn "  + (this.props.disableButton ? 'disabled' : 'grey darken-2')}>
+              <span>UPLOAD<i class="material-icons right" style={{margin: '0px'}}>file_upload</i></span>
+              <input type="file" name="file" id="fileUpload" onChange={this.props.handleChange}/>
+            </div>
+            <div class="file-path-wrapper">
+              <input class="file-path validate" type="text"/>
+            </div>
+          </div>
+
+          <button
+            class={"btn " + (this.props.disableButton ? 'disabled' : 'grey darken-2 waves-effect waves-light')}
+            type="submit"
+            name="action">
+            Process
+          </button>
+        </form>
+        <br/>
+
+        <div
+          class=""
+          style={{
+          marginTop: '10px',
+          display: (this.props.loading === "file-parser" ? 'block' : 'none')
+        }}>
+          <p>users read from file: {this.props.fileUsers}</p>
+          <p>{this.props.parseFriend}</p>
+          <p>{this.props.aggregateListLength}</p>
+          <ProgressBar loading={this.props.loading} progress={this.props.progressBar} text={this.props.parseFriend}/>
+          <p>{this.props.wrapUp}</p>
+        </div>
+      </div>
+    )
+  }
+}
+
+class FileParser2 extends Component{
+  render() {
+    return (
+      <div class="row z-depth-5 fileupload-func-panel">
+        <h6 class="bold">FILE-PARSER</h6>
+        <form id="userList" onSubmit={this.props.handleSubmit}>
           <div class="file-field input-field">
             <div class={"btn "  + (this.props.disableButton ? 'disabled' : 'grey darken-2')}>
               <span>UPLOAD<i class="material-icons right" style={{margin: '0px'}}>file_upload</i></span>
@@ -87,11 +149,47 @@ class UserParser extends Component {
   render() {
     return (
       <div class="row z-depth-5 fileupload-func-panel">
-        <h6 class="bold">USER-PARSER (Single user input)</h6>
+        <h6 class="bold">USER-PARSER</h6>
         <form id="userForm" onSubmit={this.props.handleSubmit}>
           <div class="input-field col s12">
             <input id="userName" type="text" class="validate" onChange={this.props.handleChange}/>
-            <label for="userName">Username</label>
+            <label for="userName">Enter a user handle (do not include the '@' symbol)</label>
+          </div>
+
+          <button
+            class={"btn " + (this.props.disableButton ? 'disabled' : 'grey darken-2 waves-effect waves-light')}
+            type="submit"
+            name="action">
+            Process
+          </button>
+        </form>
+        <br/>
+        <div
+          class=""
+          style={{
+          marginTop: '10px',
+          display: (this.props.loading === "user-parser" ? 'block' : 'none')
+        }}>
+          <p>user input: {this.props.userName}</p>
+          <p>{this.props.parseFriend}</p>
+          <p>{this.props.aggregateListLength}</p>
+          <ProgressBar loading={this.props.loading} progress={this.props.progressBar} text={this.props.parseFriend}/>
+          <p>{this.props.wrapUp}</p>
+        </div>
+      </div>
+    )
+  }
+}
+
+class UserParser2 extends Component {
+  render() {
+    return (
+      <div class="row z-depth-5 fileupload-func-panel">
+        <h6 class="bold">USER-PARSER</h6>
+        <form id="userList" onSubmit={this.props.handleSubmit}>
+          <div class="input-field col s12">
+            <input id="userName" type="text" class="validate" onChange={this.props.handleChange}/>
+            <label for="userName">Enter a user handle (do not include the '@' symbol)</label>
           </div>
 
           <button
@@ -128,7 +226,7 @@ class Functions extends Component {
     fileUpload: null,
     userName: null,
     disableButton: false,
-    parseFriend: 'initializing, please wait...',
+    parseFriend: 'initializing, please wait a up to few minutes...',
     progressBar: '0%',
     userListLength: '...',
     aggregateListLength: '',
@@ -150,6 +248,11 @@ class Functions extends Component {
       {
         id: 'userView',
         text: 'USER-PARSER',
+        view: false
+      },
+      {
+        id: 'userList',
+        text: 'USER-DATA',
         view: false
       },
       {
@@ -179,7 +282,7 @@ class Functions extends Component {
       fileUpload: null,
       userName: null,
       disableButton: false,
-      parseFriend: 'initializing, please wait...',
+      parseFriend: 'initializing, please wait up to a few minutes...',
       progressBar: '0%',
       userListLength: '...',
       aggregateListLength: '',
@@ -187,7 +290,38 @@ class Functions extends Component {
       sampling: 'reverse',
       parserType: 'friends',
       outputFileName: '',
-      view: []
+      view: [
+        {
+          id: 'tweetView',
+          text: 'TWEET-HISTORY',
+          view: true
+        },
+        {
+          id: 'fileView',
+          text: 'FILE-PARSER',
+          view: false
+        },
+        {
+          id: 'userView',
+          text: 'USER-PARSER',
+          view: false
+        },
+        {
+          id: 'userList',
+          text: 'USER-DATA',
+          view: false
+        },
+        {
+          id: 'helpView',
+          text: 'HELP',
+          view: false
+        },
+        {
+          id: 'signOut',
+          text: 'SIGN OUT',
+          view: false
+        }
+      ]
     });
   }
 
@@ -238,7 +372,12 @@ class Functions extends Component {
       console.log("tweetForm Pressed!")
       await this.processTweetHist();
     }
-    //elseif tweet or followers input
+
+    if (e.target.id === "userList") {
+      console.log("userList Pressed!")
+      await this.getUserDataInput();
+    }
+
   }
 
   outputWorkbook = (data) => {
@@ -324,7 +463,7 @@ class Functions extends Component {
       await Papa.parse(this.state.fileUpload, {
       	complete: async (results) => {
           this.setState({
-            loading: 'list-parser',
+            loading: 'file-parser',
             disableButton: true,
             outputFileName: 'File_Parser'
           });
@@ -449,7 +588,7 @@ class Functions extends Component {
             const A = await axios.post('/ttapi/getUserTweets', defaultParams);
             const B = A.data.map(tweet => {
               const tweetObj = {
-                "CREATED_AT": tweet.created_at.substring(0,10),
+                "CREATED_AT": tweet.created_at.substring(0,19),
                 "ID": tweet.id_str,
                 "TEXT": tweet.full_text,
                 "IS REPLY?": (tweet.in_reply_to_status_id ? tweet.in_reply_to_status_id : false),
@@ -673,6 +812,85 @@ class Functions extends Component {
     return userids
   }
 
+  getUserDataList = async () => {
+    try{
+      await Papa.parse(this.state.fileUpload, {
+        complete: async (results) => {
+          this.setState({
+            loading: 'file-parser',
+            disableButton: true,
+            outputFileName: 'File_Parser'
+          });
+
+          console.log("initializing file-parser...")
+          var usernames = [];
+
+          results.data.forEach(array => {
+            array.forEach(user => {
+              usernames.push(user);
+            });
+          });
+
+          this.setState({userListLength: "Users read on file: " + String(usernames.length)})
+          console.log("Number of usernames retrieved: ", usernames.length)
+          this.setState({userListLength: String(usernames.length)})
+
+          this.setState({wrapUp: "processing, please wait approximately: " + Math.floor((usernames.length*3)/60) + " minutes"});
+
+          results = await this.finalize2(usernames)
+          console.log("finalized data exists?: ", (results.length > 0 ? true : false));
+
+          this.outputWorkbook(results);
+
+          this.resetState();
+        }
+      });
+    } catch(err) {
+      console.log(err);
+      this.setState({errorMsg: err.message});
+    }
+  }
+
+  getUserDataInput = async () => {
+    try{
+      this.setState({
+        loading: 'user-parser',
+        disableButton: true,
+        outputFileName: 'User_' + this.state.parserType + ' ' + this.state.userName
+      });
+
+      let userids;
+
+      console.log("initializing user-parser...")
+
+      if (this.state.parserType === "friends") {
+        console.log("Retrieving friend IDs for selected user ...")
+        userids = await this.getFriendIDs2(this.state.userName)
+      } else {
+        console.log("Retrieving follower IDs for selected user ...")
+        userids = await this.getFollowerIDs2(this.state.userName)
+      }
+
+      console.log("Number of ", this.state.parserType, " IDs retrieved: ", userids.length)
+      console.log("Retrieving screen names from list of IDs ...")
+      var usernames = await this.getUserNames(userids)
+
+      console.log("Retrieved user names for: ", usernames.length, " out of ", userids.length, " user IDs");
+      this.setState({userListLength: String(usernames.length)})
+
+      this.setState({wrapUp: "wrapping up, please wait approximately: " + Math.floor((usernames.length*3)/60) + " minutes "});
+
+      var results = await this.finalize2(usernames)
+      console.log("finalized data exists?: ", (results.length > 0 ? true : false));
+
+      this.outputWorkbook(results);
+
+      this.resetState();
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
   mutualIds = async(userids) => {
     const outputCount = {}
     userids.forEach(array => {
@@ -745,6 +963,92 @@ class Functions extends Component {
     return [newObj, outputUsers]
   }
 
+  getFriendIDs2 = async (username) => {
+    var promiseArray = []
+    var i=0
+    var listArray = []
+    var listLength;
+    var newVal = 0;
+    var cursor = -1;
+
+    do {
+      try {
+        const timer = new Timeout();
+        var start = Date.now();
+        const B = await timer.set(61000)
+          .then(async () => {
+            const A = await axios.post('/ttapi/getFriendIDs2', {data: username, cursor: cursor});
+            cursor = A.data.cursor
+            this.setState({
+              parseFriend: "Retrieved " + String((i)*5000+A.data.ids.length) + " out of 50,000 max friends ...",
+              progressBar: Math.floor(String(i+1)/10*100).toString() + "%"
+            })
+            var end = Date.now() - start
+            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed ", String((i)*5000+A.data.ids.length), "total friends" );
+
+            return A.data.ids
+          });
+          promiseArray.push(B);
+      } catch(e) {
+        console.log(e)
+      }
+      i+=1
+    } while (i<10 || cursor === 0) //userNamesList1.length)
+
+    const result = await Promise.all(promiseArray);
+    const userids = [];
+    result.forEach(array => {
+      if (array.length > 0) {
+        var temp = array.filter(user => user !== undefined);
+        temp.forEach(item => userids.push(item));
+      }
+    });
+    console.log(userids)
+    return userids
+  }
+
+  getFollowerIDs2 = async (username) => {
+    var promiseArray = []
+    var i=0
+    var listArray = []
+    var listLength;
+    var newVal = 0;
+    var cursor = -1;
+
+    do {
+      try {
+        const timer = new Timeout();
+        var start = Date.now();
+        const B = await timer.set(61000)
+          .then(async () => {
+            const A = await axios.post('/ttapi/getFollowerIDs2', {data: username, cursor: cursor});
+            this.setState({
+              parseFriend: "Retrieved " + String((i)*5000+A.data.ids.length) + " out of 50,000 max followers ...",
+              progressBar: Math.floor(String(i+1)/10*100).toString() + "%"
+            })
+            var end = Date.now() - start
+            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed ", String((i)*5000+A.data.ids.length), "total followers" );
+            return A.data
+          });
+          promiseArray.push(B);
+      } catch(e) {
+        console.log(e)
+      }
+      i+=1
+    } while (i<10 || cursor === 0) //userNamesList1.length)
+
+    const result = await Promise.all(promiseArray);
+    const userids = [];
+    result.forEach(array => {
+      if (array.length > 0) {
+        var temp = array.filter(user => user !== undefined);
+        temp.forEach(item => userids.push(item));
+      }
+    });
+    console.log(userids)
+    return userids
+  }
+
   finalize = async(userCount, userids) => {
     var promiseArray = []
     var i=0
@@ -796,28 +1100,137 @@ class Functions extends Component {
     return usernames
   }
 
+  finalize2 = async(usernames) => {
+    var promiseArray = []
+    var i=0
+
+    do {
+      try {
+        const timer = new Timeout();
+        var start = Date.now();
+        const C = await timer.set(3100)
+          .then(async () => {
+            const A = await axios.post('/ttapi/getUserData', {data: usernames.slice(i,i+100)});
+            const B = A.data.map(user => {
+              const userObj = {
+                "USER_ID": user.id,
+                "USER_NAME": user.name,
+                "SCREEN_NAME": user.screen_name,
+                "FOLLOWER_COUNT": user.followers_count,
+                "DESCRIPTION": user.description,
+                "LOCATION": user.location,
+                "VERIFIED": user.verified,
+                "DATE_JOINED": user.created_at
+              }
+              return userObj
+            });
+            var end = Date.now() - start
+            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed users: ", String(i)," - ", String(i+100));
+            return B
+          });
+        promiseArray.push(C);
+      } catch(e) {
+        console.log(e)
+      }
+      i+=100
+    } while (i<usernames.length)
+
+    const result = await Promise.all(promiseArray);
+    const usernames2 = [];
+    result.forEach(array =>
+      array.forEach(user =>
+        usernames2.push(user)
+      )
+    );
+
+    // filter username2 by VERIFIED
+    // sort username2 by FOLLOWER_COUNT
+
+    return usernames2
+  }
+
   render() {
     return (
       <div class="dashboard-child-component">
         {this.state.view.map((item, i) => (
           (item.id==='tweetView' && item.view===true)
-          ? <TweetHist key={i} {...this.state} handleSubmit={this.onSubmit} handleChange={this.onChange}/>
+          ? [
+            <Description
+              text={<p>info: Here you can enter a user and receive up to the latest 3200 tweets
+                with tweet data such as location, time, retweet count, etc...</p>}
+            />,
+            <br/>,
+            <TweetHist key={i} {...this.state} handleSubmit={this.onSubmit} handleChange={this.onChange}/>
+          ]
           : (item.id==="fileView" && item.view===true)
           ? [
-            <h6 style={{color: 'black', fontWeight: '900'}}>OPTIONS</h6>,
+            <Description
+              text={
+              <div>
+                <p>info: This function will find mutual followers and friends amongst a group of people. This means you will be able
+                  to speculate and quantify the immediate network of recent follower or friend relationships amongst a group of people.</p>
+                <ol>
+                  <li>
+                    Select the type of sampling you want from your data (The tool samples from a larger pool of recent data).
+                  </li>
+                  <li>
+                    Second, Select whether you want to pull followers or friends data.
+                  </li>
+                  <li>
+                    Third, upload the data you want to analyze in the .csv format (Note: do not include the '@' symbol in twitter handle names).
+                  </li>
+                </ol>
+              </div>
+              }
+            />,
+            <br/>,
             <ParseMenu changeSampling={this.onChangeSample} changeParser={this.onChangeParser}/>,
             <br/>,
             <FileParser key={i} {...this.state} handleSubmit={this.onSubmit} handleChange={this.onChange}/>
           ]
           : (item.id==="userView" && item.view===true)
           ? [
-            <h6 style={{color: 'black', fontWeight: '900'}}>OPTIONS</h6>,
+            <Description
+            text={
+            <div>
+              <p>infot: This function will find mutual followers and friends amongst a group of people, but will start with the input of a single user handle.
+                This means you will not be able to select the group of users you want to analyze, however, this is the purpose of the single user function.
+                You will be able to speculate and quantify the network of most recent followers or friends a user is reaching.</p>
+              <ol>
+                <li>
+                  Select the type of sampling you want from your data (The tool samples from a larger pool of recent data).
+                </li>
+                <li>
+                  Second, Select whether you want to pull followers or friends data.
+                </li>
+                <li>
+                  Third, enter the user handle you want to analyze (Note: do not include the '@' symbol in twitter handle names)
+                </li>
+              </ol>
+            </div>
+            }
+          />,
+            <br/>,
             <ParseMenu changeSampling={this.onChangeSample} changeParser={this.onChangeParser}/>,
             <br/>,
             <UserParser key={i} {...this.state} handleSubmit={this.onSubmit} handleChange={this.onChange}/>
           ]
           : (item.id==="helpView" && item.view===true)
           ? <Help key={i}/>
+          : (item.id==="userList" && item.view===true)
+          ? [
+            <Description
+              text={
+              <div>
+                <p>info: This function will find user information for up to 50,000 friends or followers of a single user.</p>
+              </div>
+              }
+            />,
+            <br/>,
+            <ParseMenu1 changeSampling={this.onChangeSample} changeParser={this.onChangeParser}/>,
+            <br/>,
+            <UserParser2 key={i} {...this.state} handleSubmit={this.onSubmit} handleChange={this.onChange}/>
+          ]
           : <a key={i}></a>
           )
         )}
@@ -827,12 +1240,3 @@ class Functions extends Component {
 }
 
 export default Functions;
-
-//   {
-//   <TweetHist {...this.state} onSubmit={this.onSubmit} onChange={this.onChange}/>
-  // <h6 style={{color: 'black', fontWeight: '900'}}>OPTIONS</h6>
-  // <ParseMenu changeSampling={this.onChangeSample} changeParser={this.onChangeParser}/>
-  // <br/>
-//   <FileParser {...this.state} onSubmit={this.onSubmit} onChange={this.onChange}/>
-//   <UserParser {...this.state} onSubmit={this.onSubmit} onChange={this.onChange}/>
-// }

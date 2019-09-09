@@ -20,7 +20,7 @@ class LoginForm extends Component {
         <div id="ttapp-login-box" class="row z-depth-5 center-align">
           <form class="col s12" onSubmit={this.props.handleSubmit}>
             <div id="login-title" class="row">
-              Twitter Data-Miner
+              Twitter Data Tool
             </div>
             <div class="row" style={{padding: '20px 40px 0px 40px'}}>
               <div class="input-field col s12">

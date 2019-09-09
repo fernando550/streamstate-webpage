@@ -1,5 +1,5 @@
 // PACKAGES
-// require('dotenv').config()
+require('dotenv').config()
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -19,7 +19,7 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 // LOGIN REQUEST
 app.post('/ttapi/login', async (req, res) => {
-  console.log('client login request: ', req.body);
+  console.log('Entered credentials for client login request: ', req.body);
   if (req.body.username == process.env.login_name && req.body.password == process.env.login_password) {
     console.log('client login successful');
     res.send({confirmation: true, error: false});
@@ -43,7 +43,7 @@ app.post('/ttapi/getFriendIDs', async (req, res) => {
     });
     console.log('Twit Object: \n', true);
   } catch (err) {
-    console.log('Twit Object error: \n', err);
+    console.log('Twit Object Error: \n', err);
   }
 
   const defaultParams = {screen_name: req.body.data};
@@ -51,6 +51,29 @@ app.post('/ttapi/getFriendIDs', async (req, res) => {
   //start call
   T.get("friends/ids", defaultParams, async (error, data) => {
     res.send(data.ids);
+  });
+});
+
+app.post('/ttapi/getFriendIDs2', async (req, res) => {
+  console.log('Route accessed: /ttapi/getFriendIDs');
+  let T;
+  try {
+    T = new Twit({
+      consumer_key: process.env.consumer_key,
+      consumer_secret: process.env.consumer_secret,
+      app_only_auth: true
+      // timeout_ms: 60*1000,  // optional HTTP request timeout to apply to all requests.
+    });
+    console.log('Twit Object: \n', true);
+  } catch (err) {
+    console.log('Twit Object Error: \n', err);
+  }
+
+  const defaultParams = {screen_name: req.body.data, cursor: req.body.cursor};
+  console.log('user: \n', defaultParams);
+  //start call
+  T.get("friends/ids", defaultParams, async (error, data) => {
+    res.send({ids: data.ids, cursor: data.next_cursor});
   });
 });
 
@@ -66,7 +89,7 @@ app.post('/ttapi/getFollowerIDs', async (req, res) => {
     });
     console.log('Twit Object: \n', true);
   } catch (err) {
-    console.log('Twit Object error: \n', err);
+    console.log('Twit Object Error: \n', err);
   }
 
   const defaultParams = {screen_name: req.body.data};
@@ -74,6 +97,29 @@ app.post('/ttapi/getFollowerIDs', async (req, res) => {
   //start call
   T.get("followers/ids", defaultParams, async (error, data) => {
     res.send(data.ids);
+  });
+});
+
+app.post('/ttapi/getFollowerIDs2', async (req, res) => {
+  console.log('Route accessed: /ttapi/getFollowerIDs');
+  let T;
+  try {
+    T = new Twit({
+      consumer_key: process.env.consumer_key,
+      consumer_secret: process.env.consumer_secret,
+      app_only_auth: true
+      // timeout_ms: 60*1000,  // optional HTTP request timeout to apply to all requests.
+    });
+    console.log('Twit Object: \n', true);
+  } catch (err) {
+    console.log('Twit Object Error: \n', err);
+  }
+
+  const defaultParams = {screen_name: req.body.data, cursor: req.body.cursor};
+  console.log('user: \n', defaultParams);
+  //start call
+  T.get("followers/ids", defaultParams, async (error, data) => {
+    res.send({ids: data.ids, cursor: data.next_cursor});
   });
 });
 
@@ -89,12 +135,35 @@ app.post('/ttapi/getUserNames', async (req, res) => {
     });
     console.log('Twit Object: \n', true);
   } catch (err) {
-    console.log('Twit Object error: \n', err);
+    console.log('Twit Object Error: \n', err);
   }
 
-  console.log('userlist exists?: \n', (req.body.data.length > 0 ? true : false));
+  console.log('Userlist Returns Data?: \n', (req.body.data.length > 0 ? true : false));
   //start call
   T.get("users/lookup", {user_id: req.body.data}, async (error, data) => {
+    res.send(data);
+  });
+});
+
+app.post('/ttapi/getUserData', async (req, res) => {
+  console.log('Route accessed: /ttapi/getUserData');
+  console.log(req.body.data);
+  let T;
+  try {
+    T = new Twit({
+      consumer_key: process.env.consumer_key,
+      consumer_secret: process.env.consumer_secret,
+      app_only_auth: true
+      // timeout_ms: 60*1000,  // optional HTTP request timeout to apply to all requests.
+    });
+    console.log('Twit Object: \n', true);
+  } catch (err) {
+    console.log('Twit Object Error: \n', err);
+  }
+
+  console.log('Userlist Returns Data?: \n', (req.body.data.length > 0 ? true : false));
+  //start call
+  T.get("users/lookup", {screen_name: req.body.data}, async (error, data) => {
     res.send(data);
   });
 });
@@ -111,7 +180,7 @@ app.post('/ttapi/getUserTweets', async (req, res) => {
     });
     console.log('Twit Object: \n', true);
   } catch (err) {
-    console.log('Twit Object error: \n', err);
+    console.log('Twit Object Error: \n', err);
   }
   const defaultParams = req.body
   console.log("server params", defaultParams);
@@ -120,8 +189,9 @@ app.post('/ttapi/getUserTweets', async (req, res) => {
     res.send(data);
   });
 });
-// The "catchall" handler: for any request that doesn't
-// match one above, send back React's index.html file.
+
+// The "catchall" handler: for any request that don't
+// match any above, send back React's index.html file.
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname+'/client/build/index.html'));
 });

@@ -10,7 +10,7 @@
   margin-bottom: 0px;
 }
 button {
-  font-family: Roboto;
+  /* font-family: Roboto; */
 }
 .btn {
   height: 45px;
@@ -156,5 +156,9 @@ button {
   padding: 10px;
   color: white;
   margin: auto;
+  }
+
+  #iddd {
+    flex-wrap: wrap;
   }
 }
