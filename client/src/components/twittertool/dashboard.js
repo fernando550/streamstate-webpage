@@ -40,7 +40,7 @@ class Dashboard extends Component {
       },
       {
         id: 'userList',
-        text: 'User List Data',
+        text: 'Friends/Followers Download',
         view: false
       },
       {

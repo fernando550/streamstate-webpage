@@ -19,7 +19,8 @@ class ParseMenu extends Component {
         padding: '3%',
         minHeight: '150px',
         maxWidth: '400px',
-        margin: '0 3px'
+        margin: '0 3px',
+        verticalAlign: 'middle'
       }
 
     const header = {
