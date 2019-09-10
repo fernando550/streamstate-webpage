@@ -18,7 +18,7 @@ class ParseMenu extends Component {
         borderRadius: '5px',
         padding: '3%',
         minHeight: '150px',
-        maxWidth: '380px',
+        maxWidth: '350px',
         margin: '0 3px',
         verticalAlign: 'middle'
       }
