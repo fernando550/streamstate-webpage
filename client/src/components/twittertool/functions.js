@@ -1193,7 +1193,7 @@ class Functions extends Component {
             <Description
             text={
             <div>
-              <p>infot: This function will find mutual followers and friends amongst a group of people, but will start with the input of a single user handle.
+              <p>info: This function will find mutual followers and friends amongst a group of people, but will start with the input of a single user handle.
                 This means you will not be able to select the group of users you want to analyze, however, this is the purpose of the single user function.
                 You will be able to speculate and quantify the network of most recent followers or friends a user is reaching.</p>
               <ol>
