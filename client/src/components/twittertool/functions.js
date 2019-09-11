@@ -978,7 +978,9 @@ class Functions extends Component {
         const B = await timer.set(61000)
           .then(async () => {
             const A = await axios.post('/ttapi/getFriendIDs2', {data: username, cursor: cursor});
-            cursor = A.data.cursor
+            cursor = A.data.next_cursor
+            console.log("new cursor value:", cursor)
+            console.log("new counter value:", i)
             this.setState({
               parseFriend: "Retrieved " + String((i)*5000+A.data.ids.length) + " out of 50,000 max friends ...",
               progressBar: Math.floor(String(i+1)/10*100).toString() + "%"
@@ -993,7 +995,7 @@ class Functions extends Component {
         console.log(e)
       }
       i+=1
-    } while (i<10 || cursor === 0) //userNamesList1.length)
+    } while (i<10 || cursor !== 0) //userNamesList1.length)
 
     const result = await Promise.all(promiseArray);
     const userids = [];
@@ -1022,6 +1024,8 @@ class Functions extends Component {
         const B = await timer.set(61000)
           .then(async () => {
             const A = await axios.post('/ttapi/getFollowerIDs2', {data: username, cursor: cursor});
+            cursor = A.data.next_cursor
+            console.log("new cursor value:", cursor)
             this.setState({
               parseFriend: "Retrieved " + String((i)*5000+A.data.ids.length) + " out of 50,000 max followers ...",
               progressBar: Math.floor(String(i+1)/10*100).toString() + "%"
@@ -1035,7 +1039,7 @@ class Functions extends Component {
         console.log(e)
       }
       i+=1
-    } while (i<10 || cursor === 0) //userNamesList1.length)
+    } while (i<10 || cursor !== 0) //userNamesList1.length)
 
     const result = await Promise.all(promiseArray);
     const userids = [];
