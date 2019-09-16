@@ -55,7 +55,7 @@ app.post('/ttapi/getFriendIDs', async (req, res) => {
 });
 
 app.post('/ttapi/getFriendIDs2', async (req, res) => {
-  console.log('Route accessed: /ttapi/getFriendIDs');
+  console.log('Route accessed: /ttapi/getFriendIDs2');
   let T;
   try {
     T = new Twit({
@@ -69,7 +69,13 @@ app.post('/ttapi/getFriendIDs2', async (req, res) => {
     console.log('Twit Object Error: \n', err);
   }
 
-  const defaultParams = {screen_name: req.body.data, cursor: req.body.cursor};
+  let defaultParams;
+  if (req.body.cursor === 1) {
+    defaultParams = {screen_name: req.body.screenname};
+  } else {
+    defaultParams = {screen_name: req.body.screenname, cursor: req.body.cursor};
+  }
+  // const defaultParams = {screen_name: req.body.screenname, cursor: req.body.cursor};
   console.log('user: \n', defaultParams);
   //start call
   T.get("friends/ids", defaultParams, async (error, data) => {
@@ -101,7 +107,7 @@ app.post('/ttapi/getFollowerIDs', async (req, res) => {
 });
 
 app.post('/ttapi/getFollowerIDs2', async (req, res) => {
-  console.log('Route accessed: /ttapi/getFollowerIDs');
+  console.log('Route accessed: /ttapi/getFollowerIDs2');
   let T;
   try {
     T = new Twit({
@@ -115,7 +121,13 @@ app.post('/ttapi/getFollowerIDs2', async (req, res) => {
     console.log('Twit Object Error: \n', err);
   }
 
-  const defaultParams = {screen_name: req.body.data, cursor: req.body.cursor};
+  let defaultParams;
+  if (req.body.cursor === 1) {
+    defaultParams = {screen_name: req.body.screenname};
+  } else {
+    defaultParams = {screen_name: req.body.screenname, cursor: req.body.cursor};
+  }
+  // const defaultParams = {screen_name: req.body.data, cursor: req.body.cursor};
   console.log('user: \n', defaultParams);
   //start call
   T.get("followers/ids", defaultParams, async (error, data) => {

@@ -969,16 +969,17 @@ class Functions extends Component {
     var listArray = []
     var listLength;
     var newVal = 0;
-    var cursor = -1;
+    var cursor = 1;
 
     do {
       try {
         const timer = new Timeout();
         var start = Date.now();
+        console.log("current cursor: ", cursor)
         const B = await timer.set(61000)
           .then(async () => {
-            const A = await axios.post('/ttapi/getFriendIDs2', {data: username, cursor: cursor});
-            cursor = A.data.next_cursor
+            const A = await axios.post('/ttapi/getFriendIDs2', {screenname: username, cursor: cursor});
+            cursor = A.data.cursor
             console.log("new cursor value:", cursor)
             console.log("new counter value:", i)
             this.setState({
@@ -995,7 +996,7 @@ class Functions extends Component {
         console.log(e)
       }
       i+=1
-    } while (i<10 || cursor !== 0) //userNamesList1.length)
+    } while (i<10 && cursor !== 0) //userNamesList1.length)
 
     const result = await Promise.all(promiseArray);
     const userids = [];
@@ -1015,17 +1016,19 @@ class Functions extends Component {
     var listArray = []
     var listLength;
     var newVal = 0;
-    var cursor = -1;
+    var cursor = 1;
 
     do {
       try {
         const timer = new Timeout();
         var start = Date.now();
+        console.log("current cursor: ", cursor)
         const B = await timer.set(61000)
           .then(async () => {
             const A = await axios.post('/ttapi/getFollowerIDs2', {data: username, cursor: cursor});
-            cursor = A.data.next_cursor
+            cursor = A.data.cursor
             console.log("new cursor value:", cursor)
+            console.log("new counter value:", i)
             this.setState({
               parseFriend: "Retrieved " + String((i)*5000+A.data.ids.length) + " out of 50,000 max followers ...",
               progressBar: Math.floor(String(i+1)/10*100).toString() + "%"
@@ -1039,7 +1042,7 @@ class Functions extends Component {
         console.log(e)
       }
       i+=1
-    } while (i<10 || cursor !== 0) //userNamesList1.length)
+    } while (i<10 && cursor !== 0) //userNamesList1.length)
 
     const result = await Promise.all(promiseArray);
     const userids = [];
