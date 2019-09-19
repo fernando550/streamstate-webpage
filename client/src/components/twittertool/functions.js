@@ -1035,7 +1035,7 @@ class Functions extends Component {
             })
             var end = Date.now() - start
             console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed ", String((i)*5000+A.data.ids.length), "total followers" );
-            return A.data
+            return A.data.ids
           });
           promiseArray.push(B);
       } catch(e) {
