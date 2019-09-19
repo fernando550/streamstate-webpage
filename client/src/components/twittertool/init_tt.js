@@ -40,7 +40,7 @@ class TwitterTool extends Component {
   render() {
     return (
       <div>
-        {!this.state.confirmation &&
+        {this.state.confirmation &&
           <LoginForm
             handleSubmit={this.handleSubmit}
             onInputChange={this.onInputChange}
@@ -50,7 +50,7 @@ class TwitterTool extends Component {
             password={this.state.password}
           />
         }
-        {this.state.confirmation &&
+        {!this.state.confirmation &&
 
           <Dashboard/>
         }

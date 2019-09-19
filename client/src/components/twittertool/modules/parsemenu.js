@@ -3,8 +3,8 @@ import React, {Component} from 'react';
 class RadioButton extends Component {
   render() {
     return(
-      <label style={{marginRight:'5px', color: 'black'}}>
-        <input class="with-gap" id={this.props.id} name="group1" type="radio" checked={this.props.checked}/>
+      <label for={this.props.id} style={{marginRight:'5px', color: 'black'}}>
+        <input class="with-gap" id={this.props.id} name={this.props.name} type="radio" checked={this.props.checked}/>
         <span>{this.props.text}</span>
       </label>
     )
@@ -36,16 +36,16 @@ class ParseMenu extends Component {
           <div class="col s6" style={colStyle}>
           <h6 class="bold">SEARCH TYPE</h6>
           <form onChange={this.props.changeParser}>
-            <RadioButton id="friends" text="Friends" checked={true}/>
-            <RadioButton id="followers" text="Followers"/>
+            <RadioButton name="group1" id="friends" text="Friends" checked={(this.props.parserType === 'friends' ? true : false)}/>
+            <RadioButton name="group1" id="followers" text="Followers" checked={(this.props.parserType === 'friends' ? false : true)}/>
           </form></div>
 
           <div class="col s6" style={colStyle}>
           <h6 style={header}>SAMPLING TYPE</h6>
           <form onChange={this.props.changeSampling}>
-            <RadioButton id="reverse" text="Reverse Chrono (default)" checked={true}/>
-            <RadioButton id="chrono" text="Chronological" />
-            <RadioButton id="random" text="Randomized"/>
+            <RadioButton name="group2" id="reverse" text="Reverse Chrono (default)" checked={(this.props.sampling === 'reverse' ? true : false)}/>
+            <RadioButton name="group2" id="chrono" text="Chronological" checked={(this.props.sampling === 'chrono' ? true : false)}/>
+            <RadioButton name="group2" id="random" text="Randomized" checked={(this.props.sampling === 'random' ? true : false)}/>
           </form></div>
         </div>
       </div>

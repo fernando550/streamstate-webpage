@@ -335,7 +335,7 @@ class Functions extends Component {
   }
 
   onChangeSample = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     if(e.target.id === 'chrono') {
       this.setState({sampling: 'chrono'})
     } else if (e.target.id === 'random') {
@@ -346,7 +346,7 @@ class Functions extends Component {
   }
 
   onChangeParser = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     if(e.target.id === 'friends') {
       this.setState({parserType: 'friends'})
     } else if (e.target.id === 'followers') {
@@ -865,20 +865,24 @@ class Functions extends Component {
 
       if (this.state.parserType === "friends") {
         console.log("Retrieving friend IDs for selected user ...")
+        console.log(this.state.userName)
         userids = await this.getFriendIDs2(this.state.userName)
+
       } else {
         console.log("Retrieving follower IDs for selected user ...")
+        console.log(this.state.userName)
         userids = await this.getFollowerIDs2(this.state.userName)
       }
 
       console.log("Number of ", this.state.parserType, " IDs retrieved: ", userids.length)
       console.log("Retrieving screen names from list of IDs ...")
+      this.setState({wrapUp: "wrapping up, please wait approximately: " + Math.floor((userids.length*0.03)/60) + " minutes "});
       var usernames = await this.getUserNames(userids)
 
       console.log("Retrieved user names for: ", usernames.length, " out of ", userids.length, " user IDs");
       this.setState({userListLength: String(usernames.length)})
 
-      this.setState({wrapUp: "wrapping up, please wait approximately: " + Math.floor((usernames.length*3)/60) + " minutes "});
+      //
 
       var results = await this.finalize2(usernames)
       console.log("finalized data exists?: ", (results.length > 0 ? true : false));
@@ -1011,6 +1015,7 @@ class Functions extends Component {
   }
 
   getFollowerIDs2 = async (username) => {
+    console.log("GETFOLLOWERS2 ", username)
     var promiseArray = []
     var i=0
     var listArray = []
@@ -1025,7 +1030,7 @@ class Functions extends Component {
         console.log("current cursor: ", cursor)
         const B = await timer.set(61000)
           .then(async () => {
-            const A = await axios.post('/ttapi/getFollowerIDs2', {data: username, cursor: cursor});
+            const A = await axios.post('/ttapi/getFollowerIDs2', {screenname: username, cursor: cursor});
             cursor = A.data.cursor
             console.log("new cursor value:", cursor)
             console.log("new counter value:", i)
@@ -1042,7 +1047,7 @@ class Functions extends Component {
         console.log(e)
       }
       i+=1
-    } while (i<10 && cursor !== 0) //userNamesList1.length)
+    } while (i<2 && cursor !== 0) //userNamesList1.length)
 
     const result = await Promise.all(promiseArray);
     const userids = [];
@@ -1191,7 +1196,7 @@ class Functions extends Component {
               }
             />,
             <br/>,
-            <ParseMenu changeSampling={this.onChangeSample} changeParser={this.onChangeParser}/>,
+            <ParseMenu {...this.state} changeSampling={this.onChangeSample} changeParser={this.onChangeParser}/>,
             <br/>,
             <FileParser key={i} {...this.state} handleSubmit={this.onSubmit} handleChange={this.onChange}/>
           ]
@@ -1218,7 +1223,7 @@ class Functions extends Component {
             }
           />,
             <br/>,
-            <ParseMenu changeSampling={this.onChangeSample} changeParser={this.onChangeParser}/>,
+            <ParseMenu {...this.state} changeSampling={this.onChangeSample} changeParser={this.onChangeParser}/>,
             <br/>,
             <UserParser key={i} {...this.state} handleSubmit={this.onSubmit} handleChange={this.onChange}/>
           ]
@@ -1234,7 +1239,7 @@ class Functions extends Component {
               }
             />,
             <br/>,
-            <ParseMenu1 changeSampling={this.onChangeSample} changeParser={this.onChangeParser}/>,
+            <ParseMenu1 {...this.state} changeSampling={this.onChangeSample} changeParser={this.onChangeParser}/>,
             <br/>,
             <UserParser2 key={i} {...this.state} handleSubmit={this.onSubmit} handleChange={this.onChange}/>
           ]
