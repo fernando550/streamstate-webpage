@@ -1,5 +1,5 @@
 // PACKAGES
-// require('dotenv').config()
+require('dotenv').config()
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -198,6 +198,7 @@ app.post('/ttapi/getUserTweets', async (req, res) => {
   console.log("server params", defaultParams);
   //start call
   T.get("statuses/user_timeline", defaultParams, async (error, data) => {
+    console.log("tweet data", data)
     res.send(data);
   });
 });

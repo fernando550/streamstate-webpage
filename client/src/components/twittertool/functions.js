@@ -397,7 +397,36 @@ class Functions extends Component {
           "LOCATION",
           "VERIFIED",
           "DATE_JOINED",
+          "YEAR_JOINED",
           "MUTUAL_COUNT"
+          // ,
+          // "MUTUAL_PERCENT_COUNT"
+        ]
+      }
+    );
+
+    XLSX.utils.book_append_sheet(wb, ws, ws_name);
+    XLSX.writeFile(wb, 'twitter-data.xlsb');
+  }
+
+  outputWorkbook2 = (data) => {
+    var ws_name = this.state.outputFileName
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.json_to_sheet(
+      data,
+      {
+        skipHeader: false,
+        origin: "A1",
+        header:[
+          "USER_ID",
+          "USER_NAME",
+          "SCREEN_NAME",
+          "FOLLOWER_COUNT",
+          "DESCRIPTION",
+          "LOCATION",
+          "VERIFIED",
+          "DATE_JOINED",
+          "YEAR_JOINED"
           // ,
           // "MUTUAL_PERCENT_COUNT"
         ]
@@ -418,6 +447,7 @@ class Functions extends Component {
         origin: "A1",
         header:[
           "CREATED_AT",
+          "YEAR",
           "ID",
           "TEXT",
           "IS REPLY?",
@@ -578,6 +608,7 @@ class Functions extends Component {
     var promiseArray = [];
     var i = 1;
     var defaultParams =  {screen_name: this.state.userName, tweet_mode: 'extended', count: 200, include_rts: 'true'}
+    console.log("logging tweet history API call parameters", defaultParams);
 
     do {
       try {
@@ -589,6 +620,7 @@ class Functions extends Component {
             const B = A.data.map(tweet => {
               const tweetObj = {
                 "CREATED_AT": tweet.created_at.substring(0,19),
+                "YEAR": tweet.created_at.substring(26,30),
                 "ID": tweet.id_str,
                 "TEXT": tweet.full_text,
                 "IS REPLY?": (tweet.in_reply_to_status_id ? tweet.in_reply_to_status_id : false),
@@ -601,6 +633,7 @@ class Functions extends Component {
                 "QUOTE TWEET URL": (tweet.quoted_status_permalink ? tweet.quoted_status_permalink.url : 'NONE'),
                 "SOURCE": tweet.source.substring(tweet.source.indexOf(">")+1,tweet.source.lastIndexOf("<"))
               }
+              console.log("tweet object", tweetObj)
               return tweetObj
             });
             var end = Date.now() - start
@@ -620,7 +653,7 @@ class Functions extends Component {
         console.log(e)
       }
       i+=200
-    } while (i<3200)
+    } while (i<1000)
 
     const result = await Promise.all(promiseArray);
     const tweetHist = [];
@@ -738,6 +771,53 @@ class Functions extends Component {
     return userids
   }
 
+  getFollowerIDs2 = async (username) => {
+    console.log("GETFOLLOWERS2 ", username)
+    var promiseArray = []
+    var i=0
+    var listArray = []
+    var listLength;
+    var newVal = 0;
+    var cursor = 1;
+
+    do {
+      try {
+        const timer = new Timeout();
+        var start = Date.now();
+        console.log("current cursor: ", cursor)
+        const B = await timer.set(61000)
+          .then(async () => {
+            const A = await axios.post('/ttapi/getFollowerIDs2', {screenname: username, cursor: cursor});
+            cursor = A.data.cursor
+            console.log("new cursor value:", cursor)
+            console.log("new counter value:", i)
+            this.setState({
+              parseFriend: "Retrieved " + String((i)*5000+A.data.ids.length) + " out of 50,000 max followers ...",
+              progressBar: Math.floor(String(i+1)/10*100).toString() + "%"
+            })
+            var end = Date.now() - start
+            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed ", String((i)*5000+A.data.ids.length), "total followers" );
+            return A.data.ids
+          });
+          promiseArray.push(B);
+      } catch(e) {
+        console.log(e)
+      }
+      i+=1
+    } while (i<10 && cursor !== 0) //userNamesList1.length)
+
+    const result = await Promise.all(promiseArray);
+    const userids = [];
+    result.forEach(array => {
+      if (array.length > 0) {
+        var temp = array.filter(user => user !== undefined);
+        temp.forEach(item => userids.push(item));
+      }
+    });
+    console.log(userids)
+    return userids
+  }
+
   getFriendIDs = async (usernames) => {
     var promiseArray = []
     var i=0
@@ -809,6 +889,53 @@ class Functions extends Component {
         userids.push(temp);
       }
     });
+    return userids
+  }
+
+  getFriendIDs2 = async (username) => {
+    var promiseArray = []
+    var i=0
+    var listArray = []
+    var listLength;
+    var newVal = 0;
+    var cursor = 1;
+
+    do {
+      try {
+        const timer = new Timeout();
+        var start = Date.now();
+        console.log("current cursor: ", cursor)
+        const B = await timer.set(61000)
+          .then(async () => {
+            const A = await axios.post('/ttapi/getFriendIDs2', {screenname: username, cursor: cursor});
+            cursor = A.data.cursor
+            console.log("new cursor value:", cursor)
+            console.log("new counter value:", i)
+            this.setState({
+              parseFriend: "Retrieved " + String((i)*5000+A.data.ids.length) + " out of 50,000 max friends ...",
+              progressBar: Math.floor(String(i+1)/10*100).toString() + "%"
+            })
+            var end = Date.now() - start
+            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed ", String((i)*5000+A.data.ids.length), "total friends" );
+
+            return A.data.ids
+          });
+          promiseArray.push(B);
+      } catch(e) {
+        console.log(e)
+      }
+      i+=1
+    } while (i<2 && cursor !== 0) //userNamesList1.length)
+
+    const result = await Promise.all(promiseArray);
+    const userids = [];
+    result.forEach(array => {
+      if (array.length > 0) {
+        var temp = array.filter(user => user !== undefined);
+        temp.forEach(item => userids.push(item));
+      }
+    });
+    console.log(userids)
     return userids
   }
 
@@ -887,7 +1014,7 @@ class Functions extends Component {
       var results = await this.finalize2(usernames)
       console.log("finalized data exists?: ", (results.length > 0 ? true : false));
 
-      this.outputWorkbook(results);
+      this.outputWorkbook2(results);
 
       this.resetState();
     } catch(err) {
@@ -967,100 +1094,6 @@ class Functions extends Component {
     return [newObj, outputUsers]
   }
 
-  getFriendIDs2 = async (username) => {
-    var promiseArray = []
-    var i=0
-    var listArray = []
-    var listLength;
-    var newVal = 0;
-    var cursor = 1;
-
-    do {
-      try {
-        const timer = new Timeout();
-        var start = Date.now();
-        console.log("current cursor: ", cursor)
-        const B = await timer.set(61000)
-          .then(async () => {
-            const A = await axios.post('/ttapi/getFriendIDs2', {screenname: username, cursor: cursor});
-            cursor = A.data.cursor
-            console.log("new cursor value:", cursor)
-            console.log("new counter value:", i)
-            this.setState({
-              parseFriend: "Retrieved " + String((i)*5000+A.data.ids.length) + " out of 50,000 max friends ...",
-              progressBar: Math.floor(String(i+1)/10*100).toString() + "%"
-            })
-            var end = Date.now() - start
-            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed ", String((i)*5000+A.data.ids.length), "total friends" );
-
-            return A.data.ids
-          });
-          promiseArray.push(B);
-      } catch(e) {
-        console.log(e)
-      }
-      i+=1
-    } while (i<10 && cursor !== 0) //userNamesList1.length)
-
-    const result = await Promise.all(promiseArray);
-    const userids = [];
-    result.forEach(array => {
-      if (array.length > 0) {
-        var temp = array.filter(user => user !== undefined);
-        temp.forEach(item => userids.push(item));
-      }
-    });
-    console.log(userids)
-    return userids
-  }
-
-  getFollowerIDs2 = async (username) => {
-    console.log("GETFOLLOWERS2 ", username)
-    var promiseArray = []
-    var i=0
-    var listArray = []
-    var listLength;
-    var newVal = 0;
-    var cursor = 1;
-
-    do {
-      try {
-        const timer = new Timeout();
-        var start = Date.now();
-        console.log("current cursor: ", cursor)
-        const B = await timer.set(61000)
-          .then(async () => {
-            const A = await axios.post('/ttapi/getFollowerIDs2', {screenname: username, cursor: cursor});
-            cursor = A.data.cursor
-            console.log("new cursor value:", cursor)
-            console.log("new counter value:", i)
-            this.setState({
-              parseFriend: "Retrieved " + String((i)*5000+A.data.ids.length) + " out of 50,000 max followers ...",
-              progressBar: Math.floor(String(i+1)/10*100).toString() + "%"
-            })
-            var end = Date.now() - start
-            console.log("Elapsed time: ", Math.floor(end/1000), " seconds \n processed ", String((i)*5000+A.data.ids.length), "total followers" );
-            return A.data.ids
-          });
-          promiseArray.push(B);
-      } catch(e) {
-        console.log(e)
-      }
-      i+=1
-    } while (i<2 && cursor !== 0) //userNamesList1.length)
-
-    const result = await Promise.all(promiseArray);
-    const userids = [];
-    result.forEach(array => {
-      if (array.length > 0) {
-        var temp = array.filter(user => user !== undefined);
-        temp.forEach(item => userids.push(item));
-      }
-    });
-    console.log(userids)
-    return userids
-  }
-
   finalize = async(userCount, userids) => {
     var promiseArray = []
     var i=0
@@ -1081,7 +1114,8 @@ class Functions extends Component {
                 "DESCRIPTION": user.description,
                 "LOCATION": user.location,
                 "VERIFIED": user.verified,
-                "DATE_JOINED": user.created_at
+                "DATE_JOINED": user.created_at,
+                "YEAR_JOINED": user.created_at.substring(26,30)
               }
               return userObj
             });
@@ -1132,7 +1166,8 @@ class Functions extends Component {
                 "DESCRIPTION": user.description,
                 "LOCATION": user.location,
                 "VERIFIED": user.verified,
-                "DATE_JOINED": user.created_at
+                "DATE_JOINED": user.created_at,
+                "YEAR_JOINED": user.created_at.substring(26,30)
               }
               return userObj
             });
