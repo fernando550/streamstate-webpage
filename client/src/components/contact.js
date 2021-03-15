@@ -1,13 +1,16 @@
-import React, {Component} from 'react';
+import React from "react";
 
-class Contact extends Component {
-  render() {
-    return (
-      <div id="contact-component">
-        <h3>CONTACT</h3>
+import { Jumbotron } from "./jumbotron";
+
+export function Contact() {
+  return (
+    <>
+      <Jumbotron />
+      <div class="view-component container d-flex flex-column justify-content-center align-items-center">
+        <div class="d-flex flex-column justify-content-start align-items-center">
+          <h1 class="mb-5">Contact Us</h1>
+        </div>
       </div>
-    );
-  }
+    </>
+  );
 }
-
-export default Contact;

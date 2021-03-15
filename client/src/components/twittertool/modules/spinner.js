@@ -1,27 +1,24 @@
-import React, {Component} from 'react';
+import React from 'react';
 
-class Spinner extends Component {
-  render () {
+export const Spinner = props => {
     return (
       <div
-        class="preloader-wrapper small active"
+        className="preloader-wrapper small active"
         style={{
         top: '10px',
         marginLeft: '5px',
-        display: (this.props.loading === "tweet-parser" ? 'inline-block' : 'none')
+        display: (props.loading === "tweet-parser" ? 'inline-block' : 'none')
       }}>
-        <div class="spinner-layer spinner-blue-only">
-          <div class="circle-clipper left">
-            <div class="circle"></div>
-          </div><div class="gap-patch">
-            <div class="circle"></div>
-          </div><div class="circle-clipper right">
-            <div class="circle"></div>
+        <div className="spinner-layer spinner-blue-only">
+          <div className="circle-clipper left">
+            <div className="circle"></div>
+          </div><div className="gap-patch">
+            <div className="circle"></div>
+          </div><div className="circle-clipper right">
+            <div className="circle"></div>
           </div>
         </div>
       </div>
     )
   }
-}
 
-export default Spinner;

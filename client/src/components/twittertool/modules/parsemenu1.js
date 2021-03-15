@@ -1,46 +1,43 @@
-import React, {Component} from 'react';
+import React from "react";
 
-class RadioButton extends Component {
-  render() {
-    return(
-      <label for={this.props.id} style={{marginRight:'5px', color: 'black'}}>
-        <input class="with-gap" id={this.props.id} name={this.props.group} type="radio" checked={this.props.checked}/>
-        <span>{this.props.text}</span>
-      </label>
-    )
-  }
-}
+const RadioButton = props => {
+  return (
+    <label for={props.id} className="mr-3 text-white">
+      <input
+        className="with-gap"
+        id={props.id}
+        name={props.group}
+        type="radio"
+        checked={props.checked}
+      />
+      <span>{props.text}</span>
+    </label>
+  );
+};
 
-class ParseMenu extends Component {
-  render () {
-    const colStyle = {
-        backgroundColor: "lightgrey",
-        borderRadius: '5px',
-        padding: '3%',
-        minHeight: '150px',
-        margin: '0 3px'
-      }
-
-    const header = {
-      color: 'black',
-      fontWeight: '900',
-      paddingBottom:'15px'
-    }
-
-    return (
-      <div id="parse-menu" class="z-depth-5 center-align">
-          <h6 style={header}>OPTIONS</h6>
-          <div class="row" style={{margin: '0 auto', width: '78%'}}>
-          <div class="col s12" style={colStyle}>
-          <h6 class="bold">SEARCH TYPE</h6>
-          <form onChange={this.props.changeParser}>
-            <RadioButton name="group1" id="friends" text="Friends" checked={(this.props.parserType === 'friends' ? true : false)}/>
-            <RadioButton name="group1" id="followers" text="Followers" checked={(this.props.parserType === 'friends' ? false : true)}/>
-          </form></div>
+export const ParseMenu1 = props => {
+  return (
+    <div id="parse-menu" className="p-3 z-depth-5">
+      <h4 className="bold mb-3">OPTIONS</h4>
+      <div className="row ml-3">
+        <div className="col-3 bg-dark mx-3 py-3 rounded-lg">
+          <h6 className="bold text-white">SEARCH TYPE</h6>
+          <form onChange={props.changeParser}>
+            <RadioButton
+              name="group1"
+              id="friends"
+              text="Friends"
+              checked={props.parserType === "friends" ? true : false}
+            />
+            <RadioButton
+              name="group1"
+              id="followers"
+              text="Followers"
+              checked={props.parserType === "friends" ? false : true}
+            />
+          </form>
         </div>
       </div>
-    )
-  }
-}
-
-export default ParseMenu;
+    </div>
+  );
+};

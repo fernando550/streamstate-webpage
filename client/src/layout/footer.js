@@ -1,43 +1,24 @@
-import React, {Component} from "react";
-import '../css/footer.css'
-// import {Link} from "react-router-dom";
+import React from "react";
 
-class Header extends Component {
-  render() {
+import sscLogo from "../images/logo-text-white.png";
 
-    // const fbLink = "https://www.facebook.com/azimutinsurance/";
-    // const instaLink = "https://instagram.com/azimutinsurance";
-    // const targetTab = "_blank";
-    const email = "STREAMSTATECONSULTING@GMAIL.COM"
+export function Footer() {
+  const email = "STREAMSTATECONSULTING@GMAIL.COM";
 
-    return (
-      <div>
-        <div id="footer-content" class="row">
-          <div id="footer-box" class="col s12 m12 l4">
-              <h5 class="bold">LOCATION <i class="material-icons">location_on</i></h5>
-              <div>MAIN OFFICE</div>
-              <div>MIAMI, FL</div>
+  return (
+    <div class="bg-dark text-white" style={{ height: "80px" }}>
+      <div class="container py-3 h-100 d-flex flex-column justify-content-center">
+        <div class="row d-flex flex-row align-items-center">
+          <div class="col d-flex justify-content-center">
+            <img height="25px" src={sscLogo} />
           </div>
-          <div class="footer-box col s12 m12 l4">
-              <h5 class="bold">CONTACT <i class="material-icons"> phonelink</i></h5>
-              <div>EMAIL</div>
-              <div>{email}</div>
-              <br/>
-              <div>PHONE</div>
-              <div>(786) 344 - 7889</div>
+          <div class="col d-flex justify-content-center">Miami, FL</div>
+          <div class="col d-flex justify-content-center">
+            fnarbona@streamstateconsulting.com
           </div>
-          <div class="footer-box col s12 m12 l4">
-              <h5 class="bold">SOCIAL MEDIA <i class="material-icons"> share</i></h5>
-              <div>FACEBOOK</div>
-              <div><a herf="#">FB LINK (under construction)</a></div>
-              <br/>
-              <div>INSTAGRAM</div>
-              <div><a herf="#">INSTAGRAM (under construction)</a></div>
-          </div>
+          <div class="col d-flex justify-content-center">786-344-7889</div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
-
-export default Header;

@@ -1,0 +1,106 @@
+@import "~bootstrap/scss/bootstrap.scss";
+@import url("https://fonts.googleapis.com/css?family=Fira+Sans|Poppins|Roboto:100|Ubuntu");
+
+@import 'colors.scss';
+
+body {
+  font-family: Helvetica;
+  // font-family: 'Ubuntu', sans-serif;
+  // font-family: 'Roboto', serif;
+  // font-family: 'Poppins', sans-serif;
+  // font-family: 'Fira Sans', sans-serif !important;
+}
+
+$screen-height: calc(100vh - 64px);
+$my-box-shadow: 0px 4px 5.5px 0px rgba(0, 0, 0, 0.07);
+
+
+// HOME ___________________________________________________________________
+.view-component {
+  height: 90vh;
+}
+
+.menu-links {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  width: 80px;
+
+  &:hover {
+    text-decoration: none;
+    color: $ss-orange;
+  }
+}
+
+.parallax-container {
+  // height:1000px;
+  min-height: $screen-height;
+}
+
+.p-20 {
+  padding-top: 10%;
+}
+
+#login-warning {
+  color: white;
+  width: 350px;
+  border-radius: 2px;
+  padding: 5px;
+  margin: auto;
+}
+
+#login-box {
+  border-radius: 5px;
+  /* padding: 30px; */
+  width: 400px;
+  height: 400px;
+  background-color: rgba(50, 50, 50, 0.3);
+
+  input {
+    color: white;
+  }
+
+  input:focus {
+    /* border-bottom: 1px solid #1a237e; */
+    border-bottom: 1px solid $ss-orange;
+    box-shadow: 0 1px 0 0 $ss-orange;
+  }
+
+  input:focus + label {
+    /* color: #1a237e; */
+    color: white;
+  }
+}
+
+.dash-menu-item {
+  height: 60px;
+  /* background-color: #1a237e; */
+  background-color: #616161;
+  color: white;
+
+  a {
+    height: 100%;
+    width: 100%;
+    color: white;
+    /* font-weight: bold; */
+    /* margin:auto; */
+    display: inline-block;
+    line-height: 55px;
+    text-align: center;
+  }
+
+  a:hover {
+    /* font-weight: bold; */
+    /* color: #1a237e; */
+    color: black;
+    background-color: white;
+    text-decoration: none;
+  }
+}
+
+@media window and (max-height: 800px) {
+  .parallax-container {
+    // height:1000px;
+    min-height: 140vh;
+  }
+}

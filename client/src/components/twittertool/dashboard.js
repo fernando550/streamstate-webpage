@@ -1,24 +1,19 @@
 import React, {Component} from 'react';
 import Functions from './functions';
-import Help from './help';
 
-class MenuButton extends Component {
-  render() {
-    const style = {
-      // width: '10%'
-    }
+const MenuButton = props => {
     return (
-      <div class="col s2 dash-menu-item" style={style}>
+      <div className="col p-0 dash-menu-item">
         <a
-          id={this.props.id}
-          class="waves-effect waves-light"
-          onClick={this.props.handleClick}>
-          {this.props.text}
+          id={props.id}
+          className="waves-effect waves-light px-3 text-white"
+          onClick={props.handleClick}>
+          {props.text}
         </a>
       </div>
     )
   }
-}
+
 
 class Dashboard extends Component {
   state = {
@@ -72,13 +67,11 @@ class Dashboard extends Component {
 
   render() {
     return (
-      <div class="row" id="dashboard-component">
-        <div class="row">
+      <div className="container pb-4 rounded-lg">
+        <div className="row">
           {this.state.menuItems.map((item, i) => <MenuButton key={i} id={item.id} text={item.text} handleClick={this.onClick}/>)}
         </div>
-        <div class="row" style={{width: '80%'}}>
-          <Functions view={this.state.menuItems}/>
-        </div>
+        <Functions view={this.state.menuItems}/>
       </div>
     );
   }

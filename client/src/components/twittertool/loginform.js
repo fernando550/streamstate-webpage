@@ -1,67 +1,56 @@
-import React, { Component } from "react";
+import React from "react";
 
-class LoginForm extends Component {
-  render() {
+import nuurdLogo from '../../images/nuurd_orange.png';
 
-    const labelStyle = {
-      color: 'black',
-      fontWeight: 'bold'
-    }
-
+export const LoginForm = props => {
     const warningStyle = {
-      display: (this.props.error ? 'block' : 'none')
-    }
+      display: props.error ? "block" : "none",
+    };
 
     return (
       <div>
-        <div id="login-warning" class="red" style={warningStyle}>
+        <div id="login-warning" className="red" style={warningStyle}>
           Invalid username or password, please try again
         </div>
-        <div id="ttapp-login-box" class="row z-depth-5 center-align">
-          <form class="col s12" onSubmit={this.props.handleSubmit}>
-            <div id="login-title" class="row">
-              Twitter Data Tool
+        <div id="login-box" className="p-5 z-depth-5 center-align">
+          <form onSubmit={props.handleSubmit}>
+            <div className="row d-flex justify-content-center">
+              <img height="50px" src={nuurdLogo}/>
             </div>
-            <div class="row" style={{padding: '20px 40px 0px 40px'}}>
-              <div class="input-field col s12">
+            <div className="row d-flex flex-column p-5">
+              <div className="input-field col mb-5">
                 <input
                   id="username"
                   name="username"
                   type="text"
-                  class="validate"
-                  style={{width: '100%'}}
-                  value={this.props.username}
-                  onChange={this.props.onInputChange}
-                  />
-                <label for="username" id="usernamelabel" style={labelStyle}>Username:</label>
+                  className="validate w-100"
+                  value={props.username}
+                  onChange={props.onInputChange}
+                />
+                <label for="username" id="usernamelabel">
+                  Username:
+                </label>
               </div>
-              <div class="input-field col s12">
+              <div className="input-field col mb-3">
                 <input
                   id="password"
                   name="password"
                   type="password"
-                  class="validate"
-                  style={{width: '100%'}}
-                  value={this.props.password}
-                  onChange={this.props.onInputChange}
-                  />
-                <label for="password" id="passwordlabel" style={labelStyle}>Password:</label>
+                  className="validate w-100"
+                  value={props.password}
+                  onChange={props.onInputChange}
+                />
+                <label for="password" id="passwordlabel">
+                  Password:
+                </label>
               </div>
             </div>
             <br />
-            <button
-              id="tt-login-button"
-              class="btn waves-effect waves-light"
-              type="submit"
-              name="action">
+            <button className="btn btn-dark" type="submit" name="action">
               Login
-              <i class="material-icons right">person</i>
             </button>
           </form>
         </div>
       </div>
-    )
+    );
   }
-}
-
-export default LoginForm;

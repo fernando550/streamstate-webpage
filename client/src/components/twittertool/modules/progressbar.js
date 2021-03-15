@@ -1,20 +1,21 @@
-import React, {Component} from 'react';
+import React from "react";
 
-class ProgressBar extends Component {
-  render () {
-    return (
-      <div class="progress" style={{
-        width: '500px',
-        display: (this.props.loading ? 'inline-block' : 'none')
-      }}>
+export const ProgressBar = props => {
+  return (
+    <div className="progress w-50 bg-dark text-white"
+        style={{
+              display: props.loading ? "" : "none",
+              height: "25px"
+            }}>
+              <div style={{position: "absolute", top: "50%", marginLeft: "50%", fontSize: "14px"}}>{props.progress}</div>
         <div
-          class={(this.props.text === "initializing, please wait..." ? "indeterminate":"determinate")}
-          style={{width: this.props.progress}}>
-          {this.props.text}
-        </div>
+          className="progress-bar progress-bar-striped progress-bar-animated d-flex align-items-start pl-3"
+          role="progressbar"
+          aria-valuenow="75"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          style={{width: props.progress}}
+        ></div>
       </div>
-    )
-  }
-}
-
-export default ProgressBar;
+  );
+};

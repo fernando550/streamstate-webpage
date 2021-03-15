@@ -1,0 +1,39 @@
+/*  GENERAL ___________________________________________________________________*/
+.filler-div {
+  height: 150px;
+}
+.row {
+  margin-bottom: 0px;
+}
+.btn {
+  height: 45px;
+  width: 110px;
+}
+.bold {
+  font-weight: bold;
+}
+
+/*  Twitter APP Login ___________________________________________________________________*/
+
+.dashboard-child-component {
+  margin: 3%;
+  width: 100%;
+}
+
+.fileupload-func-panel {
+  background-color: white;
+  padding: 1%;
+  min-height: 350px;
+  border-radius: 5px;
+}
+#parse-menu {
+  background-color: white;
+  padding: 1%;
+  min-height: 200px;
+  border-radius: 5px;
+}
+
+/*  MEDIA ___________________________________________________________________*/
+@media only screen and (max-width: 600px) {
+
+}
