@@ -4,8 +4,8 @@
   "description": "",
   "main": "server.js",
   "engines": {
-    "node": "10.2.0",
-    "npm": "6.4.0"
+    "node": "14.13.1",
+    "npm": "7.6.0"
   },
   "scripts": {
     "start": "node server.js",
@@ -28,6 +28,7 @@
     "await-timeout": "^0.3.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
+    "npm": "^7.6.3",
     "twit": "^2.2.11",
     "twitter": "^1.7.1",
     "xlsx": "^0.13.4"
