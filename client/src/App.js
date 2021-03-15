@@ -1,6 +1,8 @@
 import React from "react";
 import { BrowserRouter, Route } from "react-router-dom";
 import "./styles/app.css";
+import 'bootstrap';
+import "./styles/index.scss";
 
 import { Navbar } from "./layout/navbar";
 import { Footer } from "./layout/footer";
