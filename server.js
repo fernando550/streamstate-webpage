@@ -1,212 +1,174 @@
 // PACKAGES
-// require('dotenv').config()
-const express = require('express');
-const path = require('path');
-const bodyParser = require('body-parser');
-const Twit = require('twit');
-const XLSX = require('xlsx');
-const Timeout = require('await-timeout');
+require("dotenv").config();
+const express = require("express");
+const path = require("path");
+const bodyParser = require("body-parser");
+const XLSX = require("xlsx");
+const Timeout = require("await-timeout");
+var Twitter = require("twitter");
 
 // START EXPRESS APP ROUTING
 const app = express();
 
 // MIDDLEWARE
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // SERVE STATIC FILES FROM REACT
-app.use(express.static(path.join(__dirname, 'client/build')));
+app.use(express.static(path.join(__dirname, "client/build")));
 
 // LOGIN REQUEST
-app.post('/ttapi/login', async (req, res) => {
-  console.log('Entered credentials for client login request: ', req.body);
-  if (req.body.username == process.env.login_name && req.body.password == process.env.login_password) {
-    console.log('client login successful');
-    res.send({confirmation: true, error: false});
+app.post("/ttapi/login", async (req, res) => {
+  console.log("Entered credentials for client login request: ", req.body);
+  if (
+    req.body.username == process.env.user &&
+    req.body.password == process.env.passcode
+  ) {
+    console.log("client login successful");
+    res.send({ confirmation: true, error: false });
+  } else {
+    console.log("client login failed");
+    res.send({ confirmation: false, error: true });
   }
-	else {
-    console.log('client login failed');
-		res.send({confirmation: false, error: true});
-	}
+});
+
+// middleware to create instance of twitter client
+app.use((req, res, next) => {
+  try {
+    req.twitterClient = new Twitter({
+      consumer_key: process.env.CONSUMER_KEY,
+      consumer_secret: process.env.CONSUMER_SECRET,
+      access_token_key: process.env.ACCESS_TOKEN_KEY,
+      access_token_secret: process.env.ACCESS_TOKEN_SECRET,
+      bearer_token: process.env.BEARER_TOKEN
+    });
+    next();
+  } catch (error) {
+    console.log("twitterClient Error: ", error);
+  }
 });
 
 // PROGRAM INITIALIZATION
-app.post('/ttapi/getFriendIDs', async (req, res) => {
-  console.log('Route accessed: /ttapi/getFriendIDs');
-  let T;
-  try {
-    T = new Twit({
-      consumer_key: process.env.consumer_key,
-      consumer_secret: process.env.consumer_secret,
-      app_only_auth: true
-      // timeout_ms: 60*1000,  // optional HTTP request timeout to apply to all requests.
-    });
-    console.log('Twit Object: \n', true);
-  } catch (err) {
-    console.log('Twit Object Error: \n', err);
-  }
-
-  const defaultParams = {screen_name: req.body.data};
-  console.log('user: \n', defaultParams);
+app.post("/ttapi/getFriendIDs", async (req, res) => {
+  console.log("Route accessed: /ttapi/getFriendIDs");
+  const defaultParams = { screen_name: req.body.data };
+  console.log("user: \n", defaultParams);
   //start call
-  T.get("friends/ids", defaultParams, async (error, data) => {
+  req.twitterClient.get("friends/ids", defaultParams, async (error, data) => {
     res.send(data.ids);
   });
 });
 
-app.post('/ttapi/getFriendIDs2', async (req, res) => {
-  console.log('Route accessed: /ttapi/getFriendIDs2');
-  let T;
-  try {
-    T = new Twit({
-      consumer_key: process.env.consumer_key,
-      consumer_secret: process.env.consumer_secret,
-      app_only_auth: true
-      // timeout_ms: 60*1000,  // optional HTTP request timeout to apply to all requests.
-    });
-    console.log('Twit Object: \n', true);
-  } catch (err) {
-    console.log('Twit Object Error: \n', err);
-  }
-
+app.post("/ttapi/getFriendIDs2", async (req, res) => {
+  console.log("Route accessed: /ttapi/getFriendIDs2");
   let defaultParams;
   if (req.body.cursor === 1) {
-    defaultParams = {screen_name: req.body.screenname};
+    defaultParams = { screen_name: req.body.screenname };
   } else {
-    defaultParams = {screen_name: req.body.screenname, cursor: req.body.cursor};
+    defaultParams = {
+      screen_name: req.body.screenname,
+      cursor: req.body.cursor,
+    };
   }
   // const defaultParams = {screen_name: req.body.screenname, cursor: req.body.cursor};
-  console.log('user: \n', defaultParams);
+  console.log("user: \n", defaultParams);
   //start call
-  T.get("friends/ids", defaultParams, async (error, data) => {
-    res.send({ids: data.ids, cursor: data.next_cursor});
+  console.log(req.twitterClient)
+  req.twitterClient.get("friends/ids", defaultParams, async (error, data) => {
+    res.send({ ids: data.ids, cursor: data.next_cursor });
   });
 });
 
-app.post('/ttapi/getFollowerIDs', async (req, res) => {
-  console.log('Route accessed: /ttapi/getFollowerIDs');
-  let T;
-  try {
-    T = new Twit({
-      consumer_key: process.env.consumer_key,
-      consumer_secret: process.env.consumer_secret,
-      app_only_auth: true
-      // timeout_ms: 60*1000,  // optional HTTP request timeout to apply to all requests.
-    });
-    console.log('Twit Object: \n', true);
-  } catch (err) {
-    console.log('Twit Object Error: \n', err);
-  }
-
-  const defaultParams = {screen_name: req.body.data};
-  console.log('user: \n', defaultParams);
+app.post("/ttapi/getFollowerIDs", async (req, res) => {
+  console.log("Route accessed: /ttapi/getFollowerIDs");
+  const defaultParams = { screen_name: req.body.data };
+  console.log("user: \n", defaultParams);
   //start call
-  T.get("followers/ids", defaultParams, async (error, data) => {
+  req.twitterClient.get("followers/ids", defaultParams, async (error, data) => {
     res.send(data.ids);
   });
 });
 
-app.post('/ttapi/getFollowerIDs2', async (req, res) => {
-  console.log('Route accessed: /ttapi/getFollowerIDs2');
-  let T;
-  try {
-    T = new Twit({
-      consumer_key: process.env.consumer_key,
-      consumer_secret: process.env.consumer_secret,
-      app_only_auth: true
-      // timeout_ms: 60*1000,  // optional HTTP request timeout to apply to all requests.
-    });
-    console.log('Twit Object: \n', true);
-  } catch (err) {
-    console.log('Twit Object Error: \n', err);
-  }
-
+app.post("/ttapi/getFollowerIDs2", async (req, res) => {
+  console.log("Route accessed: /ttapi/getFollowerIDs2");
   let defaultParams;
   if (req.body.cursor === 1) {
-    defaultParams = {screen_name: req.body.screenname};
+    defaultParams = { screen_name: req.body.screenname };
   } else {
-    defaultParams = {screen_name: req.body.screenname, cursor: req.body.cursor};
+    defaultParams = {
+      screen_name: req.body.screenname,
+      cursor: req.body.cursor,
+    };
   }
   // const defaultParams = {screen_name: req.body.data, cursor: req.body.cursor};
-  console.log('user: \n', defaultParams);
+  console.log("user: \n", defaultParams);
   //start call
-  T.get("followers/ids", defaultParams, async (error, data) => {
-    res.send({ids: data.ids, cursor: data.next_cursor});
+  req.twitterClient.get("followers/ids", defaultParams, async (error, data) => {
+    res.send({ ids: data.ids, cursor: data.next_cursor });
   });
 });
 
-app.post('/ttapi/getUserNames', async (req, res) => {
-  console.log('Route accessed: /ttapi/getUserNames');
-  let T;
-  try {
-    T = new Twit({
-      consumer_key: process.env.consumer_key,
-      consumer_secret: process.env.consumer_secret,
-      app_only_auth: true
-      // timeout_ms: 60*1000,  // optional HTTP request timeout to apply to all requests.
-    });
-    console.log('Twit Object: \n', true);
-  } catch (err) {
-    console.log('Twit Object Error: \n', err);
-  }
 
-  console.log('Userlist Returns Data?: \n', (req.body.data.length > 0 ? true : false));
+app.post("/ttapi/getUserNames", async (req, res) => {
+  console.log("Route accessed: /ttapi/getUserNames");
+  console.log(
+    "Userlist Returns Data?: \n",
+    req.body.data.length > 0 ? true : false
+  );
+
+  let ids = req.body.data
+  let idsString = "";
+  ids.forEach((item, index) => {
+    index < 1 ? idsString += item : idsString += "," + item
+  })
+
+  console.log(idsString)
   //start call
-  T.get("users/lookup", {user_id: req.body.data}, async (error, data) => {
+  req.twitterClient.get("users/lookup", { user_id: idsString }, async (error, data) => {
+    console.log(data)
     res.send(data);
   });
 });
 
-app.post('/ttapi/getUserData', async (req, res) => {
-  console.log('Route accessed: /ttapi/getUserData');
-  console.log(req.body.data);
-  let T;
-  try {
-    T = new Twit({
-      consumer_key: process.env.consumer_key,
-      consumer_secret: process.env.consumer_secret,
-      app_only_auth: true
-      // timeout_ms: 60*1000,  // optional HTTP request timeout to apply to all requests.
-    });
-    console.log('Twit Object: \n', true);
-  } catch (err) {
-    console.log('Twit Object Error: \n', err);
-  }
+app.post("/ttapi/getUserData", async (req, res) => {
+  console.log("Route accessed: /ttapi/getUserData");
+  console.log(
+    "Userlist Returns Data?: \n",
+    req.body.data.length > 0 ? true : false
+  );
 
-  console.log('Userlist Returns Data?: \n', (req.body.data.length > 0 ? true : false));
+  let ids = req.body.data
+  let idsString = "";
+  ids.forEach((item, index) => {
+    index < 1 ? idsString += item : idsString += "," + item
+  })
+
   //start call
-  T.get("users/lookup", {screen_name: req.body.data}, async (error, data) => {
+  req.twitterClient.get("users/lookup", { screen_name: idsString }, async (error, data) => {
     res.send(data);
   });
 });
 
-app.post('/ttapi/getUserTweets', async (req, res) => {
-  console.log('Route accessed: /ttapi/getUserTweets');
-  let T;
-  try {
-    T = new Twit({
-      consumer_key: process.env.consumer_key,
-      consumer_secret: process.env.consumer_secret,
-      app_only_auth: true
-      // timeout_ms: 60*1000,  // optional HTTP request timeout to apply to all requests.
-    });
-    console.log('Twit Object: \n', true);
-  } catch (err) {
-    console.log('Twit Object Error: \n', err);
-  }
-  const defaultParams = req.body
-  console.log("server params", defaultParams);
-  //start call
-  T.get("statuses/user_timeline", defaultParams, async (error, data) => {
-    console.log("tweet data", data)
-    res.send(data);
-  });
+app.post("/ttapi/getUserTweets", async (req, res) => {
+  console.log("Route accessed: /ttapi/getUserTweets");
+  var params = req.body
+  req.twitterClient.get(
+    "statuses/user_timeline",
+    params,
+    (error, tweets, response) => {
+      if (!error) {
+        // console.log(tweets);
+        console.log("successful");
+      }
+      res.send(JSON.stringify(tweets));
+    }
+  );
 });
 
 // The "catchall" handler: for any request that don't
 // match any above, send back React's index.html file.
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname+'/client/build/index.html'));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname + "/client/build/index.html"));
 });
 
 const port = process.env.PORT || 4000;
