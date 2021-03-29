@@ -17,7 +17,7 @@ $my-box-shadow: 0px 4px 5.5px 0px rgba(0, 0, 0, 0.07);
 
 // HOME ___________________________________________________________________
 .view-component {
-  height: 90vh;
+  height: $screen-height;
 }
 
 .menu-links {
@@ -41,13 +41,13 @@ $my-box-shadow: 0px 4px 5.5px 0px rgba(0, 0, 0, 0.07);
   padding-top: 10%;
 }
 
-#login-warning {
-  color: white;
-  width: 350px;
-  border-radius: 2px;
-  padding: 5px;
-  margin: auto;
-}
+// #login-warning {
+//   color: white;
+//   width: 350px;
+//   border-radius: 2px;
+//   padding: 5px;
+//   margin: auto;
+// }
 
 #login-box {
   border-radius: 5px;

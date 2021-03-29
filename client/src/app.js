@@ -1,20 +1,25 @@
 import React from "react";
 import { BrowserRouter, Route } from "react-router-dom";
-import "./styles/app.css";
-import 'bootstrap';
-import "./styles/index.scss";
 
-import { Navbar } from "./layout/navbar";
-import { Footer } from "./layout/footer";
+import "bootstrap";
+import "./assets/styles/index.scss";
+import "./assets/styles/app.css";
 
-import { Jumbotron } from "./components/jumbotron";
-import { Home } from "./components/home";
-import { About } from "./components/about";
-import { Contact } from "./components/contact";
-// import {Location} from "./components/location";
-import TwitterTool from "./components/twittertool/init_tt";
+import { Navbar } from "./components/navbar";
+import { Footer } from "./components/footer";
 
-export function App() {
+import { Home } from "./views/home";
+import { About } from "./views/about";
+import { Contact } from "./views/contact";
+import { Login } from "./nuurd/views/login";
+import { Logout } from "./nuurd/components/logout";
+
+import { PrivateRoute } from "./routes/privateRoute";
+
+import { createStore } from "./store/store.context";
+import { Dashboard } from "./views/dashboard";
+
+function App() {
   return (
     <BrowserRouter>
       <div>
@@ -22,10 +27,13 @@ export function App() {
         <Route exact path="/" component={Home} />
         <Route path="/about" component={About} />
         <Route path="/contact" component={Contact} />
-        {/* <Route path="/location" component={Location} /> */}
-        <Route path="/login" component={TwitterTool} />
+        <Route path="/login" component={Login} />
+        <Route path="/logout" component={Logout} />
+        <PrivateRoute path="/dashboard/:view" component={Dashboard} />
         <Footer />
       </div>
     </BrowserRouter>
   );
 }
+
+export default createStore(App);

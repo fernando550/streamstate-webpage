@@ -1,5 +1,5 @@
 // PACKAGES
-// require("dotenv").config();
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
@@ -25,10 +25,10 @@ app.post("/ttapi/login", async (req, res) => {
     req.body.password == process.env.passcode
   ) {
     console.log("client login successful");
-    res.send({ confirmation: true, error: false });
+    res.send(true);
   } else {
     console.log("client login failed");
-    res.send({ confirmation: false, error: true });
+    res.send(false);
   }
 });
 

@@ -1,22 +1,18 @@
 import React from "react";
 
-import nuurdLogo from '../../images/nuurd_orange.png';
+import nuurdLogo from '../../assets/images/nuurd_orange.png';
 
-export const LoginForm = props => {
-    const warningStyle = {
-      display: props.error ? "block" : "none",
-    };
-
+export const LoginForm = ({error, username, password, handleSubmit, onInputChange}) => {
     return (
       <div>
-        <div id="login-warning" className="red" style={warningStyle}>
+        {error && <div id="login-warning" className="bg-danger text-center rounded-sm text-white p-1 mb-3">
           Invalid username or password, please try again
-        </div>
+        </div>}
         <div id="login-box" className="p-5 z-depth-5 center-align">
-          <form onSubmit={props.handleSubmit}>
-            <div className="row d-flex justify-content-center">
-              <img height="50px" src={nuurdLogo}/>
-            </div>
+          <div className="row d-flex justify-content-center">
+            <img height="50px" src={nuurdLogo}/>
+          </div>
+          <form onSubmit={handleSubmit}>
             <div className="row d-flex flex-column p-5">
               <div className="input-field col mb-5">
                 <input
@@ -24,10 +20,10 @@ export const LoginForm = props => {
                   name="username"
                   type="text"
                   className="validate w-100"
-                  value={props.username}
-                  onChange={props.onInputChange}
+                  value={username}
+                  onChange={onInputChange}
                 />
-                <label for="username" id="usernamelabel">
+                <label htmlFor="username" id="usernamelabel">
                   Username:
                 </label>
               </div>
@@ -37,10 +33,10 @@ export const LoginForm = props => {
                   name="password"
                   type="password"
                   className="validate w-100"
-                  value={props.password}
-                  onChange={props.onInputChange}
+                  value={password}
+                  onChange={onInputChange}
                 />
-                <label for="password" id="passwordlabel">
+                <label htmlFor="password" id="passwordlabel">
                   Password:
                 </label>
               </div>

@@ -4,7 +4,6 @@ export const ProgressBar = props => {
   return (
     <div className="progress w-50 bg-dark text-white"
         style={{
-              display: props.loading ? "" : "none",
               height: "25px"
             }}>
               <div style={{position: "absolute", top: "50%", marginLeft: "50%", fontSize: "14px"}}>{props.progress}</div>

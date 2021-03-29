@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
+import { Context } from "../../store/store.context";
 
 const RadioButton = props => {
   return (
-    <label for={props.id} className="mr-3 text-white">
+    <label htmlFor={props.id} className="mr-3 text-white">
       <input
         className="with-gap"
         id={props.id}
@@ -16,9 +17,14 @@ const RadioButton = props => {
   );
 };
 
-export const ParseMenu = props => {
+export const ParseMenu = () => {
+  const {
+    store: { nuurd },
+    actions: { nuurd_func },
+  } = useContext(Context);
+
   return (
-    <div id="parse-menu" className="p-3 z-depth-5">
+    <div id="parse-menu" className="p-3 mb-3 z-depth-5">
       <h4 className="bold mb-3">OPTIONS</h4>
       <div className="row ml-3">
         <div className="col-3 bg-dark mx-3 py-3 rounded-lg">
@@ -28,15 +34,15 @@ export const ParseMenu = props => {
               name="group1"
               id="friends"
               text="Friends"
-              checked={props.parserType === "friends" ? true : false}
-              onChange={props.changeParser}
+              checked={nuurd.search === "friends" ? true : false}
+              onChange={nuurd_func.onChangeSearch}
             />
             <RadioButton
               name="group1"
               id="followers"
               text="Followers"
-              checked={props.parserType === "friends" ? false : true}
-              onChange={props.changeParser}
+              checked={nuurd.search === "friends" ? false : true}
+              onChange={nuurd_func.onChangeSearch}
             />
           </div>
         </div>
@@ -48,22 +54,22 @@ export const ParseMenu = props => {
               name="group2"
               id="reverse"
               text="Reverse Chrono (default)"
-              checked={props.sampling === "reverse" ? true : false}
-              onChange={props.changeSampling}
+              checked={nuurd.sampling === "reverse" ? true : false}
+              onChange={nuurd_func.changeSampling}
             />
             <RadioButton
               name="group2"
               id="chrono"
               text="Chronological"
-              checked={props.sampling === "chrono" ? true : false}
-              onChange={props.changeSampling}
+              checked={nuurd.sampling === "chrono" ? true : false}
+              onChange={nuurd_func.changeSampling}
             />
             <RadioButton
               name="group2"
               id="random"
               text="Randomized"
-              checked={props.sampling === "random" ? true : false}
-              onChange={props.changeSampling}
+              checked={nuurd.sampling === "random" ? true : false}
+              onChange={nuurd_func.changeSampling}
             />
           </div>
         </div>

@@ -1,8 +1,32 @@
-import React from "react";
-import sscLogo from "../images/logo-blazing.png";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 
-export function Navbar() {
+import { Context } from '../store/store.context';
+// images
+import sscLogo from "../assets/images/logo-blazing.png";
+
+export const Navbar = () => {
+  const { store: { user }, actions: { user_func }} = useContext(Context);
+
+  const links = [
+    {
+      text: "Home",
+      path: "/"
+    },
+    {
+      text: "About",
+      path: "/about"
+    },
+    {
+      text: "Contact",
+      path: "/contact"
+    },
+    {
+      text: user.isLoggedIn ? "Account" : "Login",
+      path: "/login"
+    }
+  ]
+  
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
@@ -25,16 +49,14 @@ export function Navbar() {
           id="navbarSupportedContent"
         >
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 text-white">
-            <li>
-                <Link className="menu-links" to="/">Home</Link>
-            </li>
-            <li>
-              <Link className="menu-links" to="/about">About</Link>
-            </li>
-            <li>
-              <Link className="menu-links" to="/contact">Contact</Link>
-            </li>
-            {/* <li><Link to="/location">Location</Link></li> */}
+            { links.map((item, index) => {
+                return (
+                  <li  key={index}>
+                    <Link className="menu-links" to={item.path}>{item.text}</Link>
+                  </li>
+                )
+              })
+            }
           </ul>
         </div>
       </div>
