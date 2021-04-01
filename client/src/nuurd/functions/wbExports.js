@@ -1,7 +1,7 @@
 import XLSX from "xlsx";
 
-export const outputWbMutualNetwork = (data) => {
-    var ws_name = this.state.outputFileName;
+export const outputWbMutualNetwork = (filename, data) => {
+    var ws_name = filename;
     var wb = XLSX.utils.book_new();
     var ws = XLSX.utils.json_to_sheet(data, {
       skipHeader: false,
@@ -25,8 +25,8 @@ export const outputWbMutualNetwork = (data) => {
     XLSX.writeFile(wb, "twitter-data.xlsb");
   };
 
-  export const outputWbNetwork = (data) => {
-    var ws_name = this.state.outputFileName;
+  export const outputWbNetwork = (filename, data) => {
+    var ws_name = filename;
     var wb = XLSX.utils.book_new();
     var ws = XLSX.utils.json_to_sheet(data, {
       skipHeader: false,

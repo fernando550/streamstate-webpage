@@ -171,7 +171,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                         case "form-network-user":
                             //runMutualNetworkUser - processUser
                             nuurd_func.setOutputFileName("soi_user_input_" + nuurd.userHandle)
-                            await mainFunc.processMutualNetworkFile(nuurd, nuurd_func)
+                            await mainFunc.processMutualNetworkUser(nuurd, nuurd_func)
                             break;
                         case "form-network":
                             //runNetwork - getUserDataInput

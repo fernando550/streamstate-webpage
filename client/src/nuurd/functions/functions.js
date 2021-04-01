@@ -122,7 +122,7 @@ const createTweetObj = (tweet) => {
              
           await finalize(output_count, output_users)
           .then(result =>
-              result.length > 0 ? wbExports.outputWbMutualNetwork(result) : null
+              result.length > 0 ? wbExports.outputWbMutualNetwork(store.outputFileName, result) : null
           )
           .catch(err => console.log("Error: ", err))
         }
@@ -151,17 +151,17 @@ const createTweetObj = (tweet) => {
       })
 
       console.log("Retrieving screen names from list of IDs ...");
-      let usernames = await this.getUserNames(initData);
+      let usernames = await getUserNames(user_ids);
       
       console.log("Retrieving friend/follower IDs for input list of users ...");
-      user_ids = await this.getNetworkIDs(usernames, store.search, store.sampling, actions);
+      user_ids = await getNetworkIds(usernames, store.search, store.sampling, actions);
 
-      const [output_count, output_users] = await this.mutualIds(user_ids);
+      const [output_count, output_users] = await mutualNetworkIdCount(user_ids);
       console.log(output_users.length > 0 ? true : false); 
 
       await finalize(output_count, output_users)
       .then(result =>
-          result.length > 0 ? wbExports.outputWbMutualNetwork(result) : null
+          result.length > 0 ? wbExports.outputWbMutualNetwork(store.outputFileName, result) : null
       )
       .catch(err => console.log("Error: ", err))
     } catch (err) {
@@ -178,7 +178,7 @@ const createTweetObj = (tweet) => {
       let usernames = await this.getUserNames(userids);
       await finalize2(usernames)
       .then(result =>
-          result.length > 0 ? wbExports.outputWbNetwork(result) : null
+          result.length > 0 ? wbExports.outputWbNetwork(store.outputFileName, result) : null
       )
       .catch(err => console.log("Error: ", err))
     } catch (err) {
@@ -190,6 +190,7 @@ const createTweetObj = (tweet) => {
   // };
 
   export const getUserNames = async (userids) => {
+    console.log("skrrrt")
     let promiseArray = [];
     let i = 0;
 
@@ -245,7 +246,7 @@ const createTweetObj = (tweet) => {
     if (usernames.length <= 500) {
       limit = usernames.length;
       for (var j = 0; j < limit; j++) {
-        listArray.push(j);
+        sampleArray.push(j);
       }
     } else {
       limit = 500;
@@ -279,6 +280,7 @@ const createTweetObj = (tweet) => {
           actions.setMessage("Processed user " + (i + 1).toString() + " out of " + usernames.length + " ...")
           actions.setProgress(Math.floor(((i + 1).toString() / usernames.length) * 100).toString() + "%")
           console.log("Found information for user: ", usernames[sampleArray[i]]);
+          console.log(A)
           return A.data;
         });
         promiseArray.push(B);
@@ -286,7 +288,7 @@ const createTweetObj = (tweet) => {
         console.log(e);
       }
       i += 1;
-    } while (i < limit); //userNamesList1.length)
+    } while (i < 2); //userNamesList1.length)
 
     let user_ids = [];
     await Promise.all(promiseArray)
@@ -294,7 +296,7 @@ const createTweetObj = (tweet) => {
       result.forEach(array => {
         if (array.length > 0) {
           const temp = array.filter(user => user !== undefined);
-          user_ids.concat(temp);
+          user_ids = user_ids.concat(temp);
         }
       })
     });
@@ -348,17 +350,19 @@ const createTweetObj = (tweet) => {
     return userids;
   };
 
-  export const mutualNetworkCount = async (userids) => {
+  export const mutualNetworkIdCount = async (userids) => {
+    console.log("enter ", userids)
+
     const outputCount = {};
-    userids.forEach((array) => {
-      array.forEach((user) => {
-        if (outputCount[user]) {
-          outputCount[user] += 1;
-        } else {
-          outputCount[user] = 1;
-        }
-      });
+    userids.forEach((user) => {
+      if (outputCount[user]) {
+        outputCount[user] += 1;
+      } else {
+        outputCount[user] = 1;
+      }
     });
+
+    console.log("flattened array: ", outputCount)
 
     let arr = [];
     for (let key in outputCount) {
@@ -367,9 +371,13 @@ const createTweetObj = (tweet) => {
       }
     }
 
+    console.log("ordered array: ", arr)
+
     arr = arr.sort(function (a, b) {
       return a[1] - b[1]; // compare numbers
     });
+
+    console.log("ordered array: ", arr)
 
     const newObj = {};
     for (var i = arr.length - 1001; i < arr.length; i++) {
@@ -379,6 +387,7 @@ const createTweetObj = (tweet) => {
     }
 
     console.log("newobj length: ", Object.keys(newObj).length);
+    console.log(newObj)
 
     const outputUsers = Object.keys(newObj);
     return [newObj, outputUsers];
@@ -393,24 +402,35 @@ const createTweetObj = (tweet) => {
       try {
         const timer = new Timeout();
         var start = Date.now();
-        const C = await timer.set(3100).then(async () => {
-          const A = await axios.post("/ttapi/getUserNames", {
+        const Timer = await timer.set(3100).then(async () => {
+          const userData = await axios.post("/ttapi/getUserNames", {
             data: userids.slice(i, i + 100),
-          });
-          const B = A.data.map((user) => {
-            const userObj = {
-              USER_ID: user.id,
-              USER_NAME: user.name,
-              SCREEN_NAME: user.screen_name,
-              FOLLOWER_COUNT: user.followers_count,
-              DESCRIPTION: user.description,
-              LOCATION: user.location,
-              VERIFIED: user.verified,
-              DATE_JOINED: user.created_at,
-              YEAR_JOINED: user.created_at.substring(26, 30),
-            };
-            return userObj;
-          });
+          }) 
+          .then(results => {
+            // console.log("RESULTS FROM USERNAME SEARCH: ", results.data)
+            return results.data
+          })
+          .then(data => {
+            if (data.errors) {
+              return null
+            } else {
+              return data.map((user) => {
+                return {
+                  USER_ID: user.id,
+                  USER_NAME: user.name,
+                  SCREEN_NAME: user.screen_name,
+                  FOLLOWER_COUNT: user.followers_count,
+                  DESCRIPTION: user.description,
+                  LOCATION: user.location,
+                  VERIFIED: user.verified,
+                  DATE_JOINED: user.created_at,
+                  YEAR_JOINED: user.created_at.substring(26, 30),
+                };
+              })
+            }
+          })
+          .catch(err => console.log(err));
+          
           var end = Date.now() - start;
           console.log(
             "Elapsed time: ",
@@ -420,18 +440,26 @@ const createTweetObj = (tweet) => {
             " - ",
             String(i + 100)
           );
-          return B;
+          return userData
         });
-        promiseArray.push(C);
+        promiseArray.push(Timer);
       } catch (e) {
         console.log(e);
       }
       i += 100;
     } while (i < userids.length);
 
-    const result = await Promise.all(promiseArray);
     const usernames = [];
-    result.forEach((array) => array.forEach((user) => usernames.push(user)));
+    const result = await Promise.all(promiseArray);
+    console.log("logging results before forEach ", result)
+    
+    result
+    .filter(item => item !== null)
+    .forEach((array) => 
+      array.forEach((user) => 
+        usernames.push(user)
+      )
+    );
 
     usernames.forEach((obj) => {
       const objID = String(obj.USER_ID);
@@ -451,24 +479,35 @@ const createTweetObj = (tweet) => {
       try {
         const timer = new Timeout();
         var start = Date.now();
-        const C = await timer.set(3100).then(async () => {
-          const A = await axios.post("/ttapi/getUserData", {
+        const Timer = await timer.set(3100).then(async () => {
+          const userData = await axios.post("/ttapi/getUserData", {
             data: usernames.slice(i, i + 100),
-          });
-          const B = A.data.map((user) => {
-            const userObj = {
-              USER_ID: user.id,
-              USER_NAME: user.name,
-              SCREEN_NAME: user.screen_name,
-              FOLLOWER_COUNT: user.followers_count,
-              DESCRIPTION: user.description,
-              LOCATION: user.location,
-              VERIFIED: user.verified,
-              DATE_JOINED: user.created_at,
-              YEAR_JOINED: user.created_at.substring(26, 30),
-            };
-            return userObj;
-          });
+          })
+          .then(results => {
+            // console.log("RESULTS FROM USERNAME SEARCH: ", results.data)
+            return results.data
+          })
+          .then(data => {
+            if (data.errors) {
+              return null
+            } else {
+              return data.map((user) => {
+                return {
+                  USER_ID: user.id,
+                  USER_NAME: user.name,
+                  SCREEN_NAME: user.screen_name,
+                  FOLLOWER_COUNT: user.followers_count,
+                  DESCRIPTION: user.description,
+                  LOCATION: user.location,
+                  VERIFIED: user.verified,
+                  DATE_JOINED: user.created_at,
+                  YEAR_JOINED: user.created_at.substring(26, 30),
+                };
+              })
+            }
+          })
+          .catch(err => console.log(err));
+
           var end = Date.now() - start;
           console.log(
             "Elapsed time: ",
@@ -478,21 +517,26 @@ const createTweetObj = (tweet) => {
             " - ",
             String(i + 100)
           );
-          return B;
+          return userData;
         });
-        promiseArray.push(C);
+        promiseArray.push(Timer);
       } catch (e) {
         console.log(e);
       }
       i += 100;
     } while (i < usernames.length);
 
-    const result = await Promise.all(promiseArray);
     const usernames2 = [];
-    result.forEach((array) => array.forEach((user) => usernames2.push(user)));
-
-    // filter username2 by VERIFIED
-    // sort username2 by FOLLOWER_COUNT
+    const result = await Promise.all(promiseArray);
+    console.log("logging results before forEach ", result)
+    
+    result
+    .filter(item => item !== null)
+    .forEach((array) => 
+      array.forEach((user) => 
+        usernames2.push(user)
+      )
+    );
 
     return usernames2;
   };
