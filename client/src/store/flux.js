@@ -1,4 +1,4 @@
-import * as mainFunc from '../nuurd/functions/functions';
+import * as mainFunc from '../functions/functions';
 
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
@@ -106,19 +106,19 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.log("Sampling selection changed to: ", e.target.id)
                     switch (e.target.id) {
                         case "chrono":
-                            setState({
+                            setStore({
                                 ...getStore(),
                                 nuurd: { ...getStore().nuurd, sampling: "chrono"}
                             })
                             break;
                         case "random":
-                            setState({
+                            setStore({
                                 ...getStore(),
                                 nuurd: { ...getStore().nuurd, sampling: "random"}
                             })
                             break;
                         default:
-                            setState({
+                            setStore({
                                 ...getStore(),
                                 nuurd: { ...getStore().nuurd, sampling: "reverse"}
                             })
@@ -131,13 +131,13 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.log("Search selection changed to: ", e.target.id)
                     switch (e.target.id) {
                         case "friends":
-                            setState({
+                            setStore({
                                 ...getStore(),
                                 nuurd: { ...getStore().nuurd, search: "friends"}
                             })
                             break;
                         default:
-                            setState({
+                            setStore({
                                 ...getStore(),
                                 nuurd: { ...getStore().nuurd, search: "followers"}
                             })

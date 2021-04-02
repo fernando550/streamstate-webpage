@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Context } from "../../store/store.context";
+import { Context } from "../store/store.context";
 
 const RadioButton = props => {
   return (
@@ -26,8 +26,8 @@ export const ParseMenu = () => {
   return (
     <div id="parse-menu" className="p-3 mb-3 z-depth-5">
       <h4 className="bold mb-3">OPTIONS</h4>
-      <div className="row ml-3">
-        <div className="col-3 bg-dark mx-3 py-3 rounded-lg">
+      <div className="row">
+        <div className="col-lg-4 col-sm-5 bg-dark mx-3 py-3 rounded-lg">
           <h6 className="bold mb-3 text-white">SEARCH TYPE</h6>
           <div>
             <RadioButton
@@ -47,7 +47,7 @@ export const ParseMenu = () => {
           </div>
         </div>
 
-        <div className="col-6 bg-dark mx-3 py-3 rounded-lg">
+        <div className="col-lg col-sm-5 bg-dark mx-3 py-3 rounded-lg">
           <h6 className="bold mb-3 text-white">SAMPLING TYPE</h6>
           <div>
             <RadioButton

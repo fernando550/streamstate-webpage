@@ -11,8 +11,8 @@ import { Footer } from "./components/footer";
 import { Home } from "./views/home";
 import { About } from "./views/about";
 import { Contact } from "./views/contact";
-import { Login } from "./nuurd/views/login";
-import { Logout } from "./nuurd/components/logout";
+import { Login } from "./views/login";
+import { Logout } from "./components/logout";
 
 import { PrivateRoute } from "./routes/privateRoute";
 

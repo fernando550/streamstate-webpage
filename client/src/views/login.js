@@ -1,13 +1,13 @@
 import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 
-import parallaxIMG from "../../assets/images/multicolor-laptop.jpg";
+import parallaxIMG from "../assets/images/multicolor-laptop.jpg";
 
 import { LoginForm } from "../components/loginform";
 import { Parallax } from "react-parallax";
 
 import { Redirect } from "react-router";
-import { Context } from "../../store/store.context";
+import { Context } from "../store/store.context";
 
 export function Login() {
   const { store, actions }= useContext(Context);

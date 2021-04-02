@@ -30,13 +30,14 @@ export const Menu = ({ logout }) => {
     ];
   
     return (
-      <div className="row mb-3">
+      <div className="mx-auto row mb-3">
         {menuItems.map((item, index) => {
           return (
-            <div key={index} className="col p-0 dash-menu-item">
+            <div key={index} className="col rounded-lg mx-1 p-0 dash-menu-item">
               <Link
                 to={item.path}
-                className="waves-effect waves-light px-3 text-white"
+                className="waves-effect waves-light px-3"
+                style={{fontSize: "12px"}}
               >
                 {item.text}
               </Link>

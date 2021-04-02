@@ -1,6 +1,6 @@
 import React from "react";
 
-import nuurdLogo from '../../assets/images/nuurd_orange.png';
+import nuurdLogo from '../assets/images/nuurd_orange.png';
 
 export const LoginForm = ({error, username, password, handleSubmit, onInputChange}) => {
     return (

@@ -3,9 +3,9 @@ import { Description } from "../components/descriptionBox";
 import { ProgressBar } from "../components/progressbar";
 import { ParseMenu } from "../components/parsemenu";
 
-import { Context } from "../../store/store.context";
+import { Context } from "../store/store.context";
 
-export const Network = (props) => {
+export const MutualNetworkUser = (props) => {
   const {
     store: { nuurd },
     actions: { nuurd_func },
@@ -17,9 +17,28 @@ export const Network = (props) => {
         text={
           <div>
             <p>
-              info: This function will find user information for up to 50,000
-              friends or followers of a single user.
+              info: This function will find mutual followers and friends amongst
+              a group of people, but will start with the input of a single user
+              handle. This means you will not be able to select the group of
+              users you want to analyze, however, this is the purpose of the
+              single user function. You will be able to speculate and quantify
+              the network of most recent followers or friends a user is
+              reaching.
             </p>
+            <ol>
+              <li>
+                Select the type of sampling you want from your data (The tool
+                samples from a larger pool of recent data).
+              </li>
+              <li>
+                Second, Select whether you want to pull followers or friends
+                data.
+              </li>
+              <li>
+                Third, enter the user handle you want to analyze (Note: do not
+                include the '@' symbol in twitter handle names)
+              </li>
+            </ol>
           </div>
         }
       />
@@ -27,7 +46,7 @@ export const Network = (props) => {
       <div className="p-3 rounded-lg z-depth-5 bg-white">
         <h4 className="bold">USER-PARSER</h4>
         <form
-          id="form-network"
+          id="form-network-user"
           className="d-flex flex-row align-items-center"
           onSubmit={nuurd_func.handleSubmit}
         >
@@ -61,7 +80,7 @@ export const Network = (props) => {
           className=""
           style={{
             marginTop: "10px",
-            display: nuurd.loading === "user-parser" ? "block" : "none",
+            display: nuurd.loading ? "block" : "none",
           }}
         >
           <p>{nuurd.message}</p>

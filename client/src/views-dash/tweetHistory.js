@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { ProgressBar } from "../components/progressbar";
 import { Description } from "../components/descriptionBox";
 
-import { Context } from "../../store/store.context";
+import { Context } from "../store/store.context";
 
 export const TweetHistory = () => {
   const {
@@ -46,7 +46,7 @@ export const TweetHistory = () => {
                 "btn " +
                 (nuurd.loading
                   ? "disabled"
-                  : "grey darken-2 waves-effect waves-light")
+                  : "waves-effect waves-light")
               }
               type="submit"
               name="action"

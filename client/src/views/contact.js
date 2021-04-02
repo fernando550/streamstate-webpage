@@ -4,13 +4,15 @@ import { Jumbotron } from "../components/jumbotron";
 
 export function Contact() {
   return (
-    <>
-      <Jumbotron />
+    <div>
+      <Jumbotron title={title} />
       <div class="view-component container d-flex flex-column justify-content-center align-items-center">
         <div class="d-flex flex-column justify-content-start align-items-center">
-          <h1 class="mb-5">Contact Us</h1>
+          <h1 class="title mb-5"></h1>
         </div>
       </div>
-    </>
+    </div>
   );
 }
+
+const title = 'Contact Us'

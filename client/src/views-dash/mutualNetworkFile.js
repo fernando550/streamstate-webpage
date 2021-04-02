@@ -3,7 +3,7 @@ import { Description } from "../components/descriptionBox";
 import { ProgressBar } from "../components/progressbar";
 import { ParseMenu } from "../components/parsemenu";
 
-import { Context } from "../../store/store.context";
+import { Context } from "../store/store.context";
 
 export const MutualNetworkFile = () => {
   const {
@@ -52,7 +52,7 @@ export const MutualNetworkFile = () => {
                 "btn " +
                 (nuurd.loading
                   ? "disabled"
-                  : "grey darken-2 d-flex align-items-center")
+                  : "orange darken-2 text-white d-flex align-items-center")
               }
             >
               <span>
@@ -78,7 +78,7 @@ export const MutualNetworkFile = () => {
               "btn " +
               (nuurd.loading
                 ? "disabled"
-                : "grey darken-2 waves-effect waves-light ml-4")
+                : "waves-effect waves-light ml-4")
             }
             type="submit"
             name="action"
