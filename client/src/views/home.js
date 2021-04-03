@@ -6,8 +6,8 @@ export function Home() {
   return (
     <div>
     <Jumbotron title={title}/>
-      <div class="view-component container d-flex flex-column justify-content-center align-items-center">
-        <div class="container w-75 d-flex flex-column align-items-start">
+      <div class="view-component d-flex flex-column justify-content-center align-items-center">
+        <div class="container w-50 d-flex flex-column align-items-start">
           <h1 class="title mx-auto mb-5">Welcome to Nuurd</h1>
           <p>Here at Nuurd, we like to do things differently... let's take for example, your advertising, marketing, or branding needs
             and think for a second about how we can possibly find our audience? There's always Facebook Ads, Google Ads, but what if you're

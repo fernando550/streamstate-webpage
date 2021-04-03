@@ -6,8 +6,8 @@ export function About() {
   return (
     <div>
       <Jumbotron title={title} />
-      <div className="view-component container d-flex flex-column justify-content-center align-items-center">
-        <div className="container w-75 d-flex flex-column align-items-center">
+      <div className="view-component d-flex flex-column justify-content-center align-items-center">
+        <div className="container w-50 d-flex flex-column align-items-center">
           <h1 className="title mb-5">About Us</h1>
           <p>{string1}</p>
           <p>{string2}</p>
