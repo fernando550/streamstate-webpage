@@ -34,7 +34,7 @@ export const Navbar = () => {
     <nav className="navbar d-flex justify-content-between bg-dark">
       <div className="container h-100">
         <a className="navbar-brand h-100 d-flex align-items-center" href="/">
-          <img src={nuurdLogo} height="20" alt="ssc-logo" />
+          <img src={nuurdLogo} height="27" alt="ssc-logo" />
         </a>
         <ul className="h-100 d-flex align-items-center text-white">
           {links.map((item, index) => {

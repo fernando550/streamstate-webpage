@@ -37,7 +37,6 @@ body {
 }
 .view-component {
   min-height: 120vh;
-  background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
 }
 .title {
   font-family: 'Fredoka One';
@@ -53,21 +52,23 @@ button {
 }
 .dashboard {
   font-family: 'Poppins';
-  background-image: linear-gradient(-225deg, #ffddb0 0%, #e4bbff 100%);
+  background-image: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
 }
 // NAV & FOOTER _________________________________________________________________
 .navbar {
   height: 50px;
+  background-color: whitesmoke;
   
   .menu-link {
     display: flex;
-    text-align: center;
+    flex-direction: column;
+    text-align: center; 
     justify-content: center;
     font-size: 12px;
     width: 80px;
     height: 100%;
     max-height: 50px;
-  
+      
     &:hover {
       text-decoration: none;
       color: $nuurd-orange;
