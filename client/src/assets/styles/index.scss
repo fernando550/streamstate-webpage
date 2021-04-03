@@ -14,15 +14,21 @@ $my-box-shadow: 0px 4px 5.5px 0px rgba(0, 0, 0, 0.07);
 
 // GENERAL _____________________________________________________________________
 body {
-  font-size: 12px;
+  font-size: 18px;
   font-family: 'Raleway';
   // font-family: 'Ubuntu', sans-serif;
   // font-family: 'Roboto', serif;
   // font-family: 'Poppins', sans-serif;
   // font-family: 'Fira Sans', sans-serif !important;
 }
+h1 {
+  // font-size: 3rem;
+  font-size: 50px;
+}
 .react-parallax-content {
   height: 100%;
+  // min-height: 1000px;
+  // min-height: fit-content;
   color: white;
   .title {
     // text-shadow: 2px 0 0 $nuurd-cyan, 
@@ -35,8 +41,14 @@ body {
     // -1px 1px 0 $nuurd-cyan;
   }
 }
+.parallax-container {
+  // height:1000px;
+  min-height: 50vh;
+  // min-height: fit-content;
+}
 .view-component {
   min-height: 120vh;
+  padding: 15% 0%;
 }
 .title {
   font-family: 'Fredoka One';
@@ -44,6 +56,8 @@ body {
 button {
   background-color: $nuurd-orange !important;
   color: white !important;
+  border: none !important;
+  text-decoration: none;
 
   &:hover {
     text-decoration: none;
@@ -64,7 +78,7 @@ button {
     flex-direction: column;
     text-align: center; 
     justify-content: center;
-    font-size: 12px;
+    font-size: 16px;
     width: 80px;
     height: 100%;
     max-height: 50px;
@@ -85,7 +99,8 @@ button {
   border-radius: 5px;
   width: 400px;
   height: 400px;
-  background-color: rgba(50, 50, 50, 0.3);
+  // background-color: rgba(50, 50, 50, 0.3);
+  background-color: #343A40;
 
   input {
     color: white;
@@ -131,5 +146,17 @@ button {
   .parallax-container {
     // height:1000px;
     min-height: 140vh;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  h1 {
+    font-size: 5vw;
+  }
+  .view-component {
+    text-align: center;
+  }
+  .w-50 {
+    width: 80% !important;
   }
 }

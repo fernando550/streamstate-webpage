@@ -4,7 +4,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
 			user: {
-                isLoggedIn: true,
+                isLoggedIn: false,
                 profile: {
                     username: "default",
                     email: "default@default.com",

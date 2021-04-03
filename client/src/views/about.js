@@ -6,7 +6,7 @@ export function About() {
   return (
     <div>
       <Jumbotron title={title} />
-      <div className="view-component d-flex flex-column justify-content-center align-items-center">
+      <div className="view-component d-flex flex-column align-items-center">
         <div className="container w-50 d-flex flex-column align-items-center">
           <h1 className="title">Hey there!</h1>
           <p className="mx-auto">
@@ -14,7 +14,7 @@ export function About() {
               src="https://assets3.lottiefiles.com/packages/lf20_9wjm14ni.json"
               background="transparent"
               speed="0.5"
-              style={{ width: "450px" }}
+              // style={{ width: "800px" }}
               loop
               autoplay
             ></lottie-player>

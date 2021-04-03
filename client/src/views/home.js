@@ -6,10 +6,10 @@ export function Home() {
   return (
     <div>
       <Jumbotron title={title} />
-      <div class="view-component d-flex flex-column justify-content-center align-items-center">
-        <div class="container w-50 d-flex flex-column align-items-start">
-          <h1 class="title mx-auto mb-5">Welcome to Nuurd</h1>
-          <p>
+      <div className="view-component d-flex flex-column align-items-center">
+        <div className="container w-50 d-flex flex-column align-items-start">
+          <h1 className="title mx-auto mb-5">Welcome to Nuurd</h1>
+          <p className="mb-5">
             Here at Nuurd, we like to do things differently... let's take for
             example, your advertising, marketing, or branding needs and think
             for a second about how we can possibly find our audience? There's
@@ -18,7 +18,7 @@ export function Home() {
             consultants (more time or money), yet, what if there was better,
             easier, faster, done for you?
           </p>
-          <p className="mx-auto">
+          <p className="mx-auto mb-5">
             <lottie-player
               src="https://assets4.lottiefiles.com/packages/lf20_M9wchH.json"
               background="transparent"
